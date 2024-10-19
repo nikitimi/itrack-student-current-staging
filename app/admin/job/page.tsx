@@ -1,7 +1,12 @@
+import Header from "@/app/components/Header";
 import React from "react";
 
 const Job = () => {
-  return <div>Job</div>;
+  return (
+    <div>
+      <Header />
+    </div>
+  );
 };
 
 export default Job;

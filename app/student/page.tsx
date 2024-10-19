@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "@/app/components/Header";
 
-const Admin = () => {
+const Dashboard = () => {
   return (
     <>
       <Header />
@@ -9,4 +9,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Dashboard;
