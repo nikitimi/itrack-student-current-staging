@@ -1,0 +1,9 @@
+import { z } from "zod";
+
+export default z.enum([
+  "WEB_AND_APPLICATIONS_DEVELOPER",
+  "COMPUTER_PROGRAMMER",
+  "WEB_ADMINISTRATOR",
+  "DEVELOPMENT_OPERATIONS_ENGINEER",
+  "SOFTWARE_ENGINEER",
+]);
