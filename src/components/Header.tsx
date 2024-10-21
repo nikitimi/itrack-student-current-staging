@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import Nav from "@/app/components/Nav";
+import Nav from "@/components/Nav";
 import Loading from "./Loading";
 
 const Header = () => {

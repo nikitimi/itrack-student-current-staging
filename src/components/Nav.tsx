@@ -1,9 +1,9 @@
 "use client";
 
-import { adminRoutes, publicRoutes, studentRoutes } from "../utils/routes";
+import { adminRoutes, publicRoutes, studentRoutes } from "@/utils/routes";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { EMPTY_STRING } from "../utils/constants";
+import { EMPTY_STRING } from "@/utils/constants";
 
 const Nav = () => {
   const routeDivider = "/";
@@ -43,7 +43,7 @@ const Nav = () => {
                 return null;
               default:
                 return (
-                  <li>
+                  <li key={route}>
                     <Link href={route} passHref>
                       <button className="capitalize border px-2 py-1 rounded-lg gap-2 w-32 hover:bg-black hover:border-black duration-200 ease-in-out">
                         {dashboard === route ? "Dashboard" : finalRouteName}

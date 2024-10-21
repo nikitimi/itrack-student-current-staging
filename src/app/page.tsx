@@ -1,6 +1,6 @@
-import Footer from "@/app/components/Footer";
-import Main from "@/app/components/Main";
-import defaultRoutes from "@/app/utils/routes";
+import Footer from "@/components/Footer";
+import Main from "@/components/Main";
+import defaultRoutes from "@/utils/routes";
 import Link from "next/link";
 
 const About = () => {

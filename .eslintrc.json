@@ -1,3 +1,81 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "boundaries"],
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:boundaries/recommended"
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    },
+    "boundaries/include": ["src/**/*"],
+    "boundaries/elements": [
+      {
+        "mode": "full",
+        "type": "shared",
+        "pattern": [
+          "src/components/**/*",
+          "src/hooks/**/*",
+          "src/lib/**/*",
+          "src/utils/**/*"
+        ]
+      },
+      {
+        "mode": "full",
+        "type": "feature",
+        "capture": ["featureName"],
+        "pattern": "src/features/*/**/*"
+      },
+      {
+        "mode": "full",
+        "type": "app",
+        "capture": ["_", "fileName"],
+        "pattern": ["src/app/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "neverImport",
+        "pattern": ["src/*", "src/fonts"]
+      }
+    ]
+  },
+  /** 0=off 1=warn 2=error. */
+  "rules": {
+    "boundaries/no-private": [0],
+    "boundaries/no-unknown": [2],
+    "boundaries/no-unknown-files": [2],
+    "boundaries/element-types": [
+      2,
+      {
+        "default": "disallow",
+        "rules": [
+          {
+            "from": ["shared"],
+            "allow": ["shared"]
+          },
+          {
+            "from": ["feature"],
+            "allow": [
+              "shared",
+              ["feature", { "featureName": "${from.featureName}" }]
+            ]
+          },
+          {
+            "from": ["app", "neverImport"],
+            "allow": ["shared", "feature"]
+          },
+          {
+            "from": ["app"],
+            "allow": [["app", { "fileName": "*.css" }]]
+          }
+        ]
+      }
+    ]
+  }
 }

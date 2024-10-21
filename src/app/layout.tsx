@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "@/app/globals.css";
+import type { Children } from "@/utils/types";
+import { headers } from "next/headers";
 
-export type Children = Readonly<{
-  children: React.ReactNode;
-}>;
+const headerList = headers();
+
+/** Place the icons inside the public folder. */
+const icons = ["favicon.ico"].map(
+  (path) => `${headerList.get("host")}/${path}`
+);
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+  src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+  src: "../fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
@@ -20,6 +25,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "iTrack | About",
   description: "Tracking your future!",
+  icons,
 };
 
 export default function RootLayout({ children }: Children) {

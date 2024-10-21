@@ -1,6 +1,6 @@
 "use client";
 
-import { adminRoutes } from "@/app/utils/routes";
+import { adminRoutes } from "@/utils/routes";
 
 import { useParams } from "next/navigation";
 import React from "react";
