@@ -34,7 +34,7 @@ export default z.enum([
   "IT_210",
   "TCW_101",
   "MST_101",
-  "PE_13",
+  "PE13",
   "IT_301",
   "IT_302",
   "IT_303",

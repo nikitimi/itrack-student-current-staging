@@ -1,0 +1,16 @@
+{
+  "academicYear": "2023-2024",
+  "studentNumber": "2021201282",
+  "yearLevel": "THIRD_YEAR",
+  "semester": "SECOND_SEMESTER",
+  "subjects": [
+    { "grade": "2.00", "code": "IT_308" },
+    { "grade": "1.50", "code": "IT_309" },
+    { "grade": "1.50", "code": "IT_310" },
+    { "grade": "1.50", "code": "CAP_301" },
+    { "grade": "1.50", "code": "IT_311" },
+    { "grade": "2.25", "code": "IT_312" },
+    { "grade": "1.00", "code": "FL302" },
+    { "grade": "1.25", "code": "RLW_101" }
+  ]
+}

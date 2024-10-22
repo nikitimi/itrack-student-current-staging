@@ -1,0 +1,44 @@
+{
+  "academicYear": "2021-2022",
+  "studentNumber": "2021201282",
+  "yearLevel": "FIRST_YEAR",
+  "semester": "FIRST_SEMESTER",
+  "subjects": [
+    {
+      "grade": "1.25",
+      "code": "IT_102"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_103"
+    },
+    {
+      "grade": "1.25",
+      "code": "IT_104"
+    },
+    {
+      "grade": "1.25",
+      "code": "RPH_101"
+    },
+    {
+      "grade": "1.50",
+      "code": "AAP_101"
+    },
+    {
+      "grade": "1.75",
+      "code": "STS_101"
+    },
+    {
+      "grade": "1.00",
+      "code": "ARP_101"
+    },
+    {
+      "grade": "1.25",
+      "code": "PE_10"
+    },
+    {
+      "grade": "1.25",
+      "code": "NSTP_10"
+    }
+  ]
+}

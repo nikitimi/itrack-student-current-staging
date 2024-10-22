@@ -1,0 +1,40 @@
+{
+  "academicYear": "2022-2023",
+  "studentNumber": "2021201282",
+  "yearLevel": "SECOND_YEAR",
+  "semester": "FIRST_SEMESTER",
+  "subjects": [
+    {
+      "grade": "1.75",
+      "code": "IT_201"
+    },
+    {
+      "grade": "1.75",
+      "code": "IT_202"
+    },
+    {
+      "grade": "2.25",
+      "code": "IT_203"
+    },
+    {
+      "grade": "2.25",
+      "code": "IT_204"
+    },
+    {
+      "grade": "1.75",
+      "code": "IT_205"
+    },
+    {
+      "grade": "1.75",
+      "code": "AAH_101"
+    },
+    {
+      "grade": "1.00",
+      "code": "ETH_101"
+    },
+    {
+      "grade": "1.25",
+      "code": "PE_12"
+    }
+  ]
+}

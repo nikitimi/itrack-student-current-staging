@@ -1,0 +1,40 @@
+{
+  "academicYear": "2022-2023",
+  "studentNumber": "2021201282",
+  "yearLevel": "SECOND_YEAR",
+  "semester": "SECOND_SEMESTER",
+  "subjects": [
+    {
+      "grade": "1.50",
+      "code": "IT_206"
+    },
+    {
+      "grade": "1.75",
+      "code": "IT_207"
+    },
+    {
+      "grade": "1.25",
+      "code": "IT_208"
+    },
+    {
+      "grade": "1.00",
+      "code": "IT_209"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_210"
+    },
+    {
+      "grade": "1.00",
+      "code": "TCW_101"
+    },
+    {
+      "grade": "1.75",
+      "code": "MST_101"
+    },
+    {
+      "grade": "1.25",
+      "code": "PE13"
+    }
+  ]
+}

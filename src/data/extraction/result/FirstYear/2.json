@@ -1,0 +1,44 @@
+{
+  "academicYear": "2021-2022",
+  "studentNumber": "2021201282",
+  "yearLevel": "FIRST_YEAR",
+  "semester": "SECOND_SEMESTER",
+  "subjects": [
+    {
+      "grade": "1.75",
+      "code": "IT_105"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_106"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_107"
+    },
+    {
+      "grade": "1.00",
+      "code": "PCM_101"
+    },
+    {
+      "grade": "1.00",
+      "code": "MMW_101"
+    },
+    {
+      "grade": "1.50",
+      "code": "UTS_101"
+    },
+    {
+      "grade": "1.25",
+      "code": "PAL_101"
+    },
+    {
+      "grade": "1.00",
+      "code": "PE_11"
+    },
+    {
+      "grade": "1.00",
+      "code": "NSTP_11"
+    }
+  ]
+}

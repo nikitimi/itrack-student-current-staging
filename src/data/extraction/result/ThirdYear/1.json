@@ -1,0 +1,40 @@
+{
+  "academicYear": "2023-2024",
+  "studentNumber": "2021201282",
+  "yearLevel": "THIRD_YEAR",
+  "semester": "FIRST_SEMESTER",
+  "subjects": [
+    {
+      "grade": "1.50",
+      "code": "IT_301"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_302"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_303"
+    },
+    {
+      "grade": "3.00",
+      "code": "IT_304"
+    },
+    {
+      "grade": "1.00",
+      "code": "IT_305"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_306"
+    },
+    {
+      "grade": "1.50",
+      "code": "IT_307"
+    },
+    {
+      "grade": "1.00",
+      "code": "FL301"
+    }
+  ]
+}
