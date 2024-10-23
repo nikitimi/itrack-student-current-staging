@@ -43,7 +43,7 @@ export async function POST(request: Request): Promise<Response> {
         Response.json(
           {
             data: data,
-            errorMessage: [errData.parserError.message],
+            errorMessage: [errData.parserError.message ?? EMPTY_STRING],
           } as FinalResponse,
           { status: 500 }
         )

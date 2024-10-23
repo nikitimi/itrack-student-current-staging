@@ -3,7 +3,6 @@
 import * as _subjects from '@/lib/calculations/grades';
 import gradeLevel from '@/lib/enums/gradeLevel';
 import semester from '@/lib/enums/semester';
-import { EMPTY_STRING } from '@/utils/constants';
 import { type FormEvent, useState } from 'react';
 import { z } from 'zod';
 import regExps from '@/features/grade/utils/regExps';
@@ -66,7 +65,7 @@ const COGDataExtractor = () => {
         (await response.json()) as ApiResponse<ExtractedCOGData>;
       const { header, body } = data;
 
-      if (errorMessage[0] !== EMPTY_STRING) {
+      if (errorMessage.length > 0) {
         throw new Error('Error in the SERVER response.');
       }
       for (const { name, target, regExp } of regExps) {
@@ -126,7 +125,7 @@ const COGDataExtractor = () => {
         }
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error(error);
     }
   }
 
