@@ -1,5 +1,5 @@
 import Header from '@/components/Header';
-import ModuleNav from '@/features/grade/student/components/ModuleNav';
+import ModuleNav from '@/features/modules/student/components/ModuleNav';
 import InternshipTaskLoader from '@/features/internship/components/InternshipTaskLoader';
 import InternshipTaskSelector from '@/features/internship/components/InternshipTaskSelector';
 import React from 'react';

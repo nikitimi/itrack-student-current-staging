@@ -1,5 +1,5 @@
-import Header from "@/components/Header";
-import ModuleNav from "@/features/grade/student/components/ModuleNav";
+import Header from '@/components/Header';
+import ModuleNav from '@/features/modules/student/components/ModuleNav';
 
 const Modules = () => {
   return (
