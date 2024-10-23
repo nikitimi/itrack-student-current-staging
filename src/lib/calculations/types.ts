@@ -1,28 +1,22 @@
-import { z } from "zod";
-import specialization from "@/lib/enums/specialization";
-import businessAnalytics from "@/lib/enums/jobs/businessAnalytics";
-import webAndMobileDevelopment from "@/lib/enums/jobs/webAndMobileDevelopment";
-import serviceManagementProgram from "@/lib/enums/jobs/serviceManagementProgram";
-import academicYear from "@/lib/schema/academicYear";
-import curriculums from "@/lib/enums/curriculums";
-import subjectCodesFor2018Curriculum from "@/lib/enums/subjectCodesFor2018Curriculum";
-import gradeRating from "@/lib/enums/gradeRating";
-import certificates from "@/lib/enums/certificates";
-import internshipTasks from "../enums/internshipTasks";
+import type { Specialization } from "@/lib/enums/specialization";
+import type { BusinessAnalyticJob } from "@/lib/enums/jobs/businessAnalytics";
+import type { WebAndMobileDevelopmentJob } from "@/lib/enums/jobs/webAndMobileDevelopment";
+import type { ServiceManagementProgramJob } from "@/lib/enums/jobs/serviceManagementProgram";
+import type { Curriculum } from "@/lib/enums/curriculum";
+import type { SubjectCodesFor2018CurriculumEnum } from "@/lib/enums/subjectCodesFor2018Curriculum";
+import type { GradeRating } from "@/lib/enums/gradeRating";
+import type { Certificate } from "@/lib/enums/certificate";
+import type { InternshipTask } from "@/lib/enums/internshipTask";
+import type { AcademicYear } from "../schema/academicYear";
 
-type AcademicYear = z.infer<typeof academicYear>;
-type BusinessAnalytics = z.infer<typeof businessAnalytics>;
-type Certificates = z.infer<typeof certificates>;
-type Curriculum = z.infer<typeof curriculums>;
-type GradeRating = z.infer<typeof gradeRating>;
-type ServiceManagementProgram = z.infer<typeof serviceManagementProgram>;
-type Specialization = z.infer<typeof specialization>;
-type SubjectCodes2018Curriculum = z.infer<typeof subjectCodesFor2018Curriculum>;
-type InternshipTasks = z.infer<typeof internshipTasks>;
-type WebAndMobileDevelopment = z.infer<typeof webAndMobileDevelopment>;
+type ModifiedAcademicYear = Pick<AcademicYear, "semester"> &
+  Partial<Pick<AcademicYear, "gradeLevel">>;
 
 export type GeneralCalculation = {
-  job: BusinessAnalytics | WebAndMobileDevelopment | ServiceManagementProgram;
+  job:
+    | BusinessAnalyticJob
+    | WebAndMobileDevelopmentJob
+    | ServiceManagementProgramJob;
   specialization: Specialization;
   gradeRating: GradeRating;
 };
@@ -43,17 +37,17 @@ export type GeneralCalculation = {
 // };
 
 export type CertificatesCalculation = {
-  certificate: Certificates;
+  certificate: Certificate;
 } & GeneralCalculation;
 
 export type GradesCalculation<C extends Curriculum> = {
-  academicYear: AcademicYear;
+  academicYear: ModifiedAcademicYear;
   subjectCode: C extends "2018 Curriculum"
-    ? SubjectCodes2018Curriculum
+    ? SubjectCodesFor2018CurriculumEnum
     : Map<string, string>;
 } & GeneralCalculation;
 
 export type InternshipCalculation = {
-  task: InternshipTasks;
+  task: InternshipTask;
   gradeRating: 1 | 2 | 3 | 4 | 5;
 } & Omit<GeneralCalculation, "gradeRating">;

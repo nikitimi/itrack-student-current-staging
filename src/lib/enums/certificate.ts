@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export default z.enum([
+const certificateEnum = z.enum([
   "PROGRAMMING_AND_DEVELOPMENT",
   "NETWORKING_AND_CYBERSECURITY",
   "CLOUD_COMPUTING_AND_VIRTUALIZATION",
@@ -12,3 +12,6 @@ export default z.enum([
   "UI/UX_DESIGN",
   "EMERGING_TECHNOLOGIES",
 ]);
+
+export type Certificate = z.infer<typeof certificateEnum>;
+export default certificateEnum;

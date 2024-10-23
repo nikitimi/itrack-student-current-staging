@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export default z.enum([
+const subjectCodesFor2018CurriculumEnum = z.enum([
   "IT_102",
   "IT_103",
   "IT_104",
@@ -57,3 +57,8 @@ export default z.enum([
   "CAP_401",
   "SSP_101",
 ]);
+
+export type SubjectCodesFor2018CurriculumEnum = z.infer<
+  typeof subjectCodesFor2018CurriculumEnum
+>;
+export default subjectCodesFor2018CurriculumEnum;

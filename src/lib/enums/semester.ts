@@ -1,3 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export default z.enum(["FIRST_SEMESTER", "SECOND_SEMESTER"]);
+const semesterEnum = z.enum(['FIRST_SEMESTER', 'SECOND_SEMESTER']);
+
+export type Semester = z.infer<typeof semesterEnum>;
+export default semesterEnum;

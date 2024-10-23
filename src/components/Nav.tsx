@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { adminRoutes, publicRoutes, studentRoutes } from "@/utils/routes";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { EMPTY_STRING } from "@/utils/constants";
+import { adminRoutes, publicRoutes, studentRoutes } from '@/utils/routes';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { EMPTY_STRING } from '@/utils/constants';
 
 const Nav = () => {
-  const routeDivider = "/";
+  const routeDivider = '/';
   const pathname = usePathname();
-  const isPathnameForStudents = pathname.includes("/student");
+  const isPathnameForStudents = pathname.includes('/student');
   const dynamicRoute = isPathnameForStudents ? studentRoutes : adminRoutes;
   const dashboard = dynamicRoute[0];
 
@@ -19,12 +19,11 @@ const Nav = () => {
     );
     const finalRouteName =
       filteredRouteFragments.length === 0
-        ? "about"
+        ? 'about'
         : filteredRouteFragments[filteredRouteFragments.length - 1];
     return { filteredRouteFragments, finalRouteName };
   }
 
-  console.log({ pathname });
   return (
     <nav className="bg-blue-700 p-2">
       <ul className="flex flex-row justify-between">
@@ -45,8 +44,8 @@ const Nav = () => {
                 return (
                   <li key={route}>
                     <Link href={route} passHref>
-                      <button className="capitalize border px-2 py-1 rounded-lg gap-2 w-32 hover:bg-black hover:border-black duration-200 ease-in-out">
-                        {dashboard === route ? "Dashboard" : finalRouteName}
+                      <button className="w-32 gap-2 rounded-lg border px-2 py-1 capitalize duration-200 ease-in-out hover:border-black hover:bg-black">
+                        {dashboard === route ? 'Dashboard' : finalRouteName}
                       </button>
                     </Link>
                   </li>

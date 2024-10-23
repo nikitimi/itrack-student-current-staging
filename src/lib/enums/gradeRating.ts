@@ -1,3 +1,6 @@
 import { z } from "zod";
 
-export default z.enum(["A", "B", "C"]);
+const gradeRatingEnum = z.enum(["A", "B", "C"]);
+
+export type GradeRating = z.infer<typeof gradeRatingEnum>;
+export default gradeRatingEnum;

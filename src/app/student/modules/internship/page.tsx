@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import ModuleNav from '@/features/grade/student/components/ModuleNav';
 import React from 'react';
 
-const Certificate = () => {
+const Internship = () => {
   return (
     <div>
       <Header />
@@ -11,4 +11,4 @@ const Certificate = () => {
   );
 };
 
-export default Certificate;
+export default Internship;

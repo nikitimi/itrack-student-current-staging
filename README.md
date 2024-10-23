@@ -27,7 +27,4 @@ These 3 modules will have a breakdown of the Jobs well suited for the students.
 
 Issues:
 
-- TypeError: Promise.withResolvers is not a function in react-pdftotext that is using [react-pdf](https://github.com/mozilla/pdf.js), here the [solutions](https://stackoverflow.com/questions/78415681/pdf-js-pdfjs-dist-promise-withresolvers-is-not-a-function), **TLDR**: _this is due to NodeJS < v22_.
-  - Steps to overcome:
-    - Find similar package for extracting text from PDF and retain Node LTS.
-    - Remain to v22 then dockerize the Web App. Host to GCP or Azure's free trial, and add domain name.
+- ~~TypeError: Promise.withResolvers is not a function in react-pdftotext that is using [react-pdf](https://github.com/mozilla/pdf.js), here the [solutions](https://stackoverflow.com/questions/78415681/pdf-js-pdfjs-dist-promise-withresolvers-is-not-a-function), **TLDR**: _this is due to NodeJS < v22_.~~ _(Resolved with [`pdf2json`](https://github.com/modesty/pdf2json) package.)_

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export default z.enum([
+const internshipTaskEnum = z.enum([
   "REQUIREMENT_GATHERING",
   "DATA_ANALYSIS",
   "PROCESS_DOCUMENTATION",
@@ -42,3 +42,6 @@ export default z.enum([
   "DISASTER_RECOVERY_PLANNING",
   "CONFIGURATION_MANAGEMENT_DATABASE_(CMDB)",
 ]);
+
+export type InternshipTask = z.infer<typeof internshipTaskEnum>;
+export default internshipTaskEnum;
