@@ -44,7 +44,7 @@ const CertificateLoader = () => {
                       <td>
                         <div className="flex justify-center gap-2">
                           <button
-                            className="w-24 rounded-lg bg-red-500 px-2 py-1 text-center text-white shadow-sm"
+                            className="h-12 w-24 rounded-lg bg-red-500 px-2 py-1 text-center text-white shadow-sm"
                             onClick={() => {
                               const tableRow = document.querySelector(
                                 `tr#${encodedCertificate}`
