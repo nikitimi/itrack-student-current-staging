@@ -1,6 +1,5 @@
 import Footer from '@/components/Footer';
 import Main from '@/components/Main';
-import COGDataExtractor from '@/features/grade/student/components/COGDataExtractor';
 import defaultRoutes from '@/utils/routes';
 import Link from 'next/link';
 
@@ -27,7 +26,6 @@ const About = () => {
 
       <Main>
         <p>Hello World</p>
-        <COGDataExtractor />
       </Main>
       <Footer />
     </>

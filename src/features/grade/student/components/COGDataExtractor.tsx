@@ -3,15 +3,16 @@
 import * as _subjects from '@/lib/calculations/grades';
 import gradeLevel from '@/lib/enums/gradeLevel';
 import semester from '@/lib/enums/semester';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, Suspense, useState } from 'react';
 import { z } from 'zod';
-import regExps from '@/features/grade/utils/regExps';
+import regExps from '@/features/grade/student/utils/regExps';
 import subjectsHelper, {
   SubjectDetails,
-} from '@/features/grade/utils/subjectsHelper';
+} from '@/features/grade/student/utils/subjectsHelper';
 import subjectsIndexIdentifier from '@/utils/subjectsIndexIdentifier';
 import { ApiResponse } from '@/utils/types/apiResponse';
 import type { ExtractedCOGData } from '@/lib/schema/apiDataResponse/extractedCOGData';
+import Loading from '@/components/Loading';
 
 type YearLevel = z.infer<typeof gradeLevel>;
 type Semester = z.infer<typeof semester>;
@@ -130,7 +131,7 @@ const COGDataExtractor = () => {
   }
 
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       <form onSubmit={handleSubmit}>
         <input name="file" type="file" required />
         <button>Reveal</button>
@@ -144,7 +145,7 @@ const COGDataExtractor = () => {
           </p>
         );
       })}
-    </>
+    </Suspense>
   );
 };
 

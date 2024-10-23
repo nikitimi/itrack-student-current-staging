@@ -17,8 +17,8 @@ const ModuleNav = () => {
     EMPTY_STRING;
 
   return (
-    <div className="bg-blue-500 p-2">
-      <h3 className="py-10 text-center text-lg">Modules:</h3>
+    <div className="bg-violet-200 p-2">
+      <h3 className="py-8 text-center text-lg">Modules:</h3>
       <section className="flex justify-between">
         {moduleRoutes.map((route) => {
           const name = route.split('/')[3];
@@ -33,7 +33,10 @@ const ModuleNav = () => {
             'ease-in-out',
           ];
           const colorClasses = ['border-black', 'bg-slate-400', 'text-black'];
-          const hoverClasses = ['hover:bg-blue-400', 'hover:border-blue-400'];
+          const hoverClasses = [
+            'hover:bg-blue-400/80',
+            'hover:border-blue-400',
+          ];
           const activeClasses = [
             'border-green-700',
             'bg-green-700',
