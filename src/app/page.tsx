@@ -1,10 +1,10 @@
 import Footer from '@/components/Footer';
 import Main from '@/components/Main';
-import defaultRoutes from '@/utils/routes';
+import userRoleEnum from '@/lib/enums/userRole';
 import Link from 'next/link';
 
 const About = () => {
-  const routes = Object.keys(defaultRoutes);
+  const routes = userRoleEnum.options;
   return (
     <>
       {/* TODO: If there is a user, hide this navigation UI. */}

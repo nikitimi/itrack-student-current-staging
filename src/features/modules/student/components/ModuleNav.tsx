@@ -1,17 +1,21 @@
-import { EMPTY_STRING } from '@/utils/constants';
-import { studentRoutes } from '@/utils/routes';
-import { headers } from 'next/headers';
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import React from 'react';
+
+import studentRoutesEnum from '@/lib/enums/routes/studentRoutes';
+import { EMPTY_STRING, WRONG_NUMBER } from '@/utils/constants';
+
+const studentRoutes = studentRoutesEnum.options;
 
 const ModuleNav = () => {
   const routeDivider = '/';
   const headerList = headers();
   const moduleRoutes = studentRoutes.filter(
-    (route) => route.includes('modules') && route.split(routeDivider).length > 4
+    (route) => route.includes('modules') && route.split(routeDivider).length > 3
   );
   const fullPath = headerList.get('x-pathname');
-  const lastIndexOfRouteDivider = fullPath?.lastIndexOf(routeDivider) ?? -1;
+  const lastIndexOfRouteDivider =
+    fullPath?.lastIndexOf(routeDivider) ?? WRONG_NUMBER;
   const pathName =
     fullPath?.substring(lastIndexOfRouteDivider + 1, fullPath.length) ??
     EMPTY_STRING;
@@ -22,6 +26,7 @@ const ModuleNav = () => {
       <section className="flex justify-between">
         {moduleRoutes.map((route) => {
           const name = route.split('/')[3];
+
           const isActiveRoute = name.includes(pathName);
 
           const defaultClasses = [

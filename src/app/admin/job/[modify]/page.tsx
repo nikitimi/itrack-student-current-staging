@@ -1,15 +1,17 @@
-"use client";
+'use client';
 
-import { adminRoutes } from "@/utils/routes";
+import adminRoutesEnum from '@/lib/enums/routes/adminRoutes';
 
-import { useParams } from "next/navigation";
-import React from "react";
+import { useParams } from 'next/navigation';
+import React from 'react';
 
 const Modify = () => {
   const params = useParams();
-  const routes = adminRoutes.filter((r) => r.includes(params.modify as string));
+  const routes = adminRoutesEnum.options.filter((r) =>
+    r.includes(params.modify as string)
+  );
 
-  if (routes.length === 0) throw new Error("Route doesn&apos;t exists!");
+  if (routes.length === 0) throw new Error('Route doesn&apos;t exists!');
 
   return <div>{params.modify}</div>;
 };

@@ -1,7 +1,7 @@
 import type {
   HeadingType,
   HeadingAlignment,
-} from '@/lib/schema/components/headingPropsSchema';
+} from '@/lib/schema/components/headingProps';
 import React from 'react';
 
 type HeadingProps = {

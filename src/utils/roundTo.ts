@@ -11,7 +11,7 @@ export default function roundTo(n: number, digits?: number) {
     negative = true;
     n = n * -1;
   }
-  let multiplicator = Math.pow(10, digits);
+  const multiplicator = Math.pow(10, digits);
   n = parseFloat((n * multiplicator).toFixed(11));
   n = +(Math.round(n) / multiplicator).toFixed(digits);
   if (negative) {

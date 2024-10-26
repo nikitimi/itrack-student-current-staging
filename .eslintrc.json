@@ -24,6 +24,7 @@
           "src/hooks/**/*",
           "src/lib/**/*",
           "src/redux/**/*",
+          "src/server/**/*",
           "src/utils/**/*"
         ]
       },

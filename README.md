@@ -2,6 +2,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ---
 
+TODO:
+
+- Disable interactivity when authenticating.
+- Admin and Student logs.
+- Admin monitoring.
+- Maybe Student COR upload for double checking of Student Number.
+- Seamless integration of charts.
+- Frontend.
+
 There are 3 modules for computation for the students.
 
 - Grades - 25%
