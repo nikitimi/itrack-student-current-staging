@@ -1,26 +1,27 @@
 'use client';
 
+import type { Specialization } from '@/lib/enums/specialization';
+import type { ExtractedCOGDataResponse } from '@/server/lib/schema/extractedCOGData';
+
+import React, { useState } from 'react';
+
 import * as _subjects from '@/lib/calculations/grades';
-import gradeLevel from '@/lib/enums/gradeLevel';
-import semester from '@/lib/enums/semester';
-import { type FormEvent, useState } from 'react';
-import { z } from 'zod';
+import gradeLevel, { type GradeLevel } from '@/lib/enums/gradeLevel';
+import semester, { type Semester } from '@/lib/enums/semester';
 import regExps from '@/features/grade/student/utils/regExps';
 import subjectsHelper, {
   SubjectDetails,
 } from '@/features/grade/student/utils/subjectsHelper';
 import subjectsIndexIdentifier from '@/utils/subjectsIndexIdentifier';
-import { ApiResponse } from '@/utils/types/apiResponse';
-import type { ExtractedCOGData } from '@/lib/schema/apiDataResponse/extractedCOGData';
-
-type YearLevel = z.infer<typeof gradeLevel>;
-type Semester = z.infer<typeof semester>;
+import { WRONG_NUMBER } from '@/utils/constants';
+import { useAppSelector } from '@/hooks/redux';
+import { specialization } from '@/redux/reducers/authenticationReducer';
 
 type FinalResult = {
   studentNumber: string;
   academicYear: string;
   semester: Semester;
-  yearLevel: YearLevel;
+  yearLevel: GradeLevel;
   subjects: { code: SubjectDetails['subjectCode']; grade: string }[];
 };
 
@@ -34,7 +35,9 @@ const initialState: FinalResult = {
 
 const COGDataExtractor = () => {
   /** TODO: Link specialization here. */
-  const targetSpecialization = 'BUSINESS_ANALYTICS' as const;
+  const _specialization = specialization(
+    useAppSelector((s) => s.authentication)
+  );
   const [state, setState] = useState(initialState);
   const subjectList = Object.entries(_subjects)
     .sort(
@@ -42,12 +45,12 @@ const COGDataExtractor = () => {
     )
     .map((s) => s[1]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setState(initialState);
     let resultHolder = {
       semester: 'FIRST_SEMESTER',
-      yearLevelIndex: -1,
+      yearLevelIndex: WRONG_NUMBER,
     };
 
     try {
@@ -62,7 +65,7 @@ const COGDataExtractor = () => {
       }
 
       const { data, errorMessage } =
-        (await response.json()) as ApiResponse<ExtractedCOGData>;
+        (await response.json()) as ExtractedCOGDataResponse;
       const { header, body } = data;
 
       if (errorMessage.length > 0) {
@@ -102,7 +105,7 @@ const COGDataExtractor = () => {
                 body,
                 semester: resultHolder?.semester as Semester,
                 subjects: subjectList[resultHolder.yearLevelIndex],
-                targetSpecialization,
+                targetSpecialization: _specialization as Specialization,
               };
 
               const codes = subjectsHelper(subjectArgument);

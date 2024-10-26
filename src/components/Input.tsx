@@ -4,12 +4,13 @@ type InputProps = {
   regExp: RegExp;
 } & Omit<React.HTMLProps<HTMLInputElement>, 'onChange' | 'className'>;
 
+export const validClasses = ['border-green-600', 'text-green-900'];
+export const errorClasses = ['border-red-600', 'text-red-900'];
+
 const Input = ({ regExp, ...rest }: InputProps) => {
   return (
     <input
       onChange={(event) => {
-        const validClasses = ['border-green-600', 'text-green-900'];
-        const errorClasses = ['border-red-600', 'text-red-900'];
         const value = event.currentTarget.value;
         const isNotAValidStudentNumber = !regExp.test(value);
         if (value.length === 0) {

@@ -1,42 +1,36 @@
-import { NextResponse } from 'next/server';
-import {
-  studentRoutes,
-  adminRoutes,
-  generateProtectedRoutes,
-} from '@/utils/routes';
 import { clerkMiddleware } from '@clerk/nextjs/server';
 
-const protectedStudentRoutes = generateProtectedRoutes(studentRoutes);
-const protectedAdminRoutes = generateProtectedRoutes(adminRoutes);
+import type { AdminRoute } from '@/lib/enums/routes/adminRoutes';
+import type { StudentRoute } from '@/lib/enums/routes/studentRoutes';
+import handleClerkAuthMiddleware from '@/server/utils/middleware/handleClerkAuthMiddleware';
+import setStudentNumber from '@/server/utils/middleware/setStudentNumber';
+import { HEADER_KEY } from '@/utils/constants';
+
+type Routes = AdminRoute | StudentRoute;
 
 export default clerkMiddleware(async (auth, request) => {
   const session = await auth();
   const url = new URL(request.url);
   const origin = url.origin;
-  const pathname = url.pathname as ReturnType<
-    typeof generateProtectedRoutes
-  >[number];
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-url', request.url);
-  requestHeaders.set('x-origin', origin);
-  requestHeaders.set('x-pathname', pathname);
+  const pathname = url.pathname as Routes;
 
   if (session.sessionId === null) {
-    console.log();
-    switch (true) {
-      case protectedStudentRoutes.includes(pathname):
-        console.log('student');
-        return NextResponse.redirect(new URL('/student/signin', request.url));
-      case protectedAdminRoutes.includes(pathname):
-        console.log('admin');
-        return NextResponse.redirect(new URL('/admin/signin', request.url));
-    }
+    return handleClerkAuthMiddleware(pathname, request);
   }
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+
+  const { role, specialization, studentNumber, studentType } =
+    await setStudentNumber(session, origin);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(HEADER_KEY.origin, origin);
+  requestHeaders.set(HEADER_KEY.pathname, pathname);
+  requestHeaders.set(HEADER_KEY.role, role);
+  requestHeaders.set(HEADER_KEY.studentNumber, studentNumber);
+  requestHeaders.set(HEADER_KEY.studentType, studentType);
+  requestHeaders.set(HEADER_KEY.specialization, specialization);
+  requestHeaders.set(HEADER_KEY.uid, session.userId);
+  requestHeaders.set(HEADER_KEY.url, request.url);
+
+  return handleClerkAuthMiddleware(pathname, request, requestHeaders);
 });
 
 export const config = {

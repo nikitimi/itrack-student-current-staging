@@ -1,53 +1,44 @@
-'server only';
+import type { ParsingStatus } from '@/lib/enums/parsingStatus';
+import type { ExtractPDFDataResponse } from '@/server/lib/schema/apiResponse/extractPDFData';
 
-import type { ExtractedCOGData } from '@/lib/schema/apiDataResponse/extractedCOGData';
-import { EMPTY_STRING } from '@/utils/constants';
-import parsingStatus from '@/utils/parsingStatus';
-import type { ApiResponse } from '@/utils/types/apiResponse';
 import PDFParser, { type Output } from 'pdf2json';
 
-type FinalResponse = ApiResponse<ExtractedCOGData>;
-type ParsingStatus = (typeof parsingStatus)[number];
+import { EMPTY_STRING } from '@/utils/constants';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: Request): Promise<Response> {
+export async function POST(
+  request: Request
+): Promise<NextResponse<ExtractPDFDataResponse>> {
   const pdfParser = new PDFParser(true);
-  /** Default data, No transaction. */
-  const data = {
-    body: EMPTY_STRING,
-    footer: EMPTY_STRING,
-    header: EMPTY_STRING,
-  };
-
   const headerTexts: string[] = [];
   const bodyTexts: string[] = [];
   const footerTexts: string[] = [];
 
   const formdata = await request.formData();
   const documentHolder = formdata.get('file') as File | null;
+  let response: ExtractPDFDataResponse = {
+    data: {
+      body: EMPTY_STRING,
+      footer: EMPTY_STRING,
+      header: EMPTY_STRING,
+    },
+    errorMessage: [],
+  };
 
   if (!documentHolder) {
-    return Response.json(
-      {
-        data: data,
-        errorMessage: ['No file provided.'],
-      } as FinalResponse,
-      {
-        status: 411,
-      }
-    );
+    response = { ...response, errorMessage: ['No file provided.'] };
+    return NextResponse.json(response, {
+      status: 411,
+    });
   }
 
   return new Promise((resolve) => {
     pdfParser.on('pdfParser_dataError', (errData) => {
-      resolve(
-        Response.json(
-          {
-            data: data,
-            errorMessage: [errData.parserError.message ?? EMPTY_STRING],
-          } as FinalResponse,
-          { status: 500 }
-        )
-      );
+      response = {
+        ...response,
+        errorMessage: [errData.parserError.message ?? EMPTY_STRING],
+      };
+      resolve(NextResponse.json(response, { status: 500 }));
     });
 
     pdfParser.on('pdfParser_dataReady', (pdfData: Output) => {
@@ -101,12 +92,12 @@ export async function POST(request: Request): Promise<Response> {
           .trimEnd(),
       };
 
-      resolve(
-        Response.json({
-          data: transactedData,
-          errorMessage: [],
-        } as FinalResponse)
-      );
+      response = {
+        ...response,
+        data: transactedData,
+      };
+
+      resolve(NextResponse.json(response));
     });
 
     documentHolder

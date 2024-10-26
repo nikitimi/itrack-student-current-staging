@@ -1,11 +1,18 @@
+import type { StudentType } from '@/lib/enums/studentType';
+import type { UserRole } from '@/lib/enums/userRole';
 import type { RootState } from '@/redux/store';
 
 import { createSlice } from '@reduxjs/toolkit';
 
+import { EMPTY_STRING, WRONG_NUMBER } from '@/utils/constants';
+import { Specialization } from '@/lib/enums/specialization';
+
 type InitialState = {
-  studentNumber: 'null' | number;
-  studentType: 'regular' | 'irregular' | 'null';
-  userType: 'admin' | 'student' | 'anonymous';
+  specialization: Specialization | 'null';
+  studentNumber: number;
+  studentType: StudentType | 'null';
+  userType: UserRole | 'anonymous';
+  userId: string;
 };
 /** `studentNumber`: ***'null'*** if userType is ***'anonymous'***.
  *
@@ -15,9 +22,11 @@ type InitialState = {
  * `userType`: ***'admin'*** is logged in, ***'student'*** is logged in. else ***'anonymous'***.
  * */
 const initialState: InitialState = {
-  studentNumber: 'null',
+  specialization: 'null',
+  studentNumber: WRONG_NUMBER,
   studentType: 'null',
   userType: 'anonymous',
+  userId: EMPTY_STRING,
 };
 
 /** This is for managing the state in authentication module of students. */
@@ -25,6 +34,12 @@ const authenticationSlice = createSlice({
   name: 'authentication',
   initialState,
   reducers: {
+    authenticationSetStudentSpecialization(
+      state,
+      action: { payload: InitialState['specialization'] }
+    ) {
+      state.specialization = action.payload;
+    },
     authenticationSetStudentNumber(
       state,
       action: { payload: InitialState['studentNumber'] }
@@ -43,24 +58,37 @@ const authenticationSlice = createSlice({
     ) {
       state.userType = action.payload;
     },
+    authenticationSetUserID(
+      state,
+      action: { payload: InitialState['userId'] }
+    ) {
+      state.userId = action.payload;
+    },
     authenticationResetState(state) {
       state.studentNumber = initialState.studentNumber;
       state.studentType = initialState.studentType;
+      state.userId = initialState.userId;
       state.userType = initialState.userType;
     },
   },
 });
 
 // SELECTORS.
-export const studentNumber = (s: RootState) => s.authentication.studentNumber;
-export const studentType = (s: RootState) => s.authentication.studentType;
-export const userType = (s: RootState) => s.authentication.userType;
+export const specialization = (a: RootState['authentication']) =>
+  a.specialization;
+export const studentNumber = (a: RootState['authentication']) =>
+  a.studentNumber;
+export const studentType = (a: RootState['authentication']) => a.studentType;
+export const userType = (a: RootState['authentication']) => a.userType;
+export const userId = (a: RootState['authentication']) => a.userId;
 
 // ACTIONS.
 export const {
+  authenticationSetStudentSpecialization,
   authenticationSetStudentNumber,
   authenticationSetStudentType,
   authenticationSetUserType,
   authenticationResetState,
+  authenticationSetUserID,
 } = authenticationSlice.actions;
 export default authenticationSlice.reducer;

@@ -1,19 +1,25 @@
 'use client';
 
-import { adminRoutes, publicRoutes, studentRoutes } from '@/utils/routes';
-import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { EMPTY_STRING } from '@/utils/constants';
+import { usePathname } from 'next/navigation';
+
+import adminRoutesEnum from '@/lib/enums/routes/adminRoutes';
+import publicRoutesEnum from '@/lib/enums/routes/publicRoutes';
+import studentRoutesEnum from '@/lib/enums/routes/studentRoutes';
+import { EMPTY_STRING, ROUTE_DIVIDER } from '@/utils/constants';
+
+const adminRoutes = adminRoutesEnum.options;
+const publicRoutes = publicRoutesEnum.options;
+const studentRoutes = studentRoutesEnum.options;
 
 const Nav = () => {
-  const routeDivider = '/';
   const pathname = usePathname();
   const isPathnameForStudents = pathname.includes('/student');
   const dynamicRoute = isPathnameForStudents ? studentRoutes : adminRoutes;
   const dashboard = dynamicRoute[0];
 
   function routeHelper(route: (typeof dynamicRoute)[number]) {
-    const routeFragments = route.split(routeDivider);
+    const routeFragments = route.split(ROUTE_DIVIDER);
     const filteredRouteFragments = routeFragments.filter(
       (r) => r !== EMPTY_STRING
     );
