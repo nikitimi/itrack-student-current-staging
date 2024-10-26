@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import CertificateLoader from '@/features/certificate/student/components/CertificateLoader';
 import CertificateSelector from '@/features/certificate/student/components/CertificateSelector';
 import ModuleNav from '@/features/modules/student/components/ModuleNav';
+import React from 'react';
 
 const Certificate = () => {
   return (
