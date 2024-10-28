@@ -8,9 +8,6 @@ import { Provider } from 'react-redux';
 
 import { useAppDispatch } from '@/hooks/redux';
 import {
-  authenticationSetStudentNumber,
-  authenticationSetStudentSpecialization,
-  authenticationSetStudentType,
   authenticationSetUserID,
   authenticationSetUserType,
 } from '@/redux/reducers/authenticationReducer';
@@ -18,6 +15,11 @@ import store from '@/redux/store';
 import { EMPTY_STRING } from '@/utils/constants';
 import type { StudentType } from '@/lib/enums/studentType';
 import type { Specialization } from '@/lib/enums/specialization';
+import {
+  studentInfoSetNumber,
+  studentInfoSetSpecialization,
+  studentInfoSetType,
+} from '@/redux/reducers/studentInfoReducer';
 
 type StoreProviderParams = {
   userId: string | null;
@@ -43,9 +45,9 @@ const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(authenticationSetStudentSpecialization(specialization));
-    dispatch(authenticationSetStudentType(studentType));
-    dispatch(authenticationSetStudentNumber(parseInt(studentNumber, 10)));
+    dispatch(studentInfoSetSpecialization(specialization));
+    dispatch(studentInfoSetType(studentType));
+    dispatch(studentInfoSetNumber(studentNumber));
     dispatch(authenticationSetUserType(role));
     dispatch(authenticationSetUserID(userId ?? EMPTY_STRING));
   }, [dispatch, role, specialization, studentNumber, studentType, userId]);

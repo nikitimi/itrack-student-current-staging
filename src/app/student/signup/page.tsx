@@ -1,6 +1,5 @@
 'use client';
 
-import type { UserRole } from '@/lib/enums/userRole';
 import type { GetStudentNumberResponse } from '@/server/lib/schema/apiResponse/getStudentNumber';
 
 import { useSignUp } from '@clerk/nextjs';
@@ -10,21 +9,21 @@ import AuthenticationHelper from '@/components/AuthenticationHelper';
 import Heading from '@/components/Heading';
 import Input, { errorClasses, validClasses } from '@/components/Input';
 import useAppRouter from '@/hooks/useAppRouter';
-import { EMPTY_STRING } from '@/utils/constants';
 import regExp from '@/utils/regex';
 import specializationEnum, {
   type Specialization,
 } from '@/lib/enums/specialization';
+import { StudentCreation } from '@/app/student/verify-email/page';
+import { useAppDispatch } from '@/hooks/redux';
+import { authenticationSetStatus } from '@/redux/reducers/authenticationReducer';
+import {
+  studentTemporarySetNumber,
+  studentTemporarySetSpecialization,
+} from '@/redux/reducers/studentTemporaryReducer';
 
-type StudentCreation = {
-  role: UserRole;
-  userId: string;
-  studentNumber: string;
-  specialization: Specialization;
-};
 type InitialState = {
   studentNumbers: StudentCreation['studentNumber'][];
-} & Pick<StudentCreation, 'specialization' | 'studentNumber'>;
+};
 
 /** Styling the password inputs inside the Sign Up page. */
 function stylePasswordInputs(type?: 'error') {
@@ -44,23 +43,14 @@ function stylePasswordInputs(type?: 'error') {
 }
 
 const initialState: InitialState = {
-  studentNumber: EMPTY_STRING,
   studentNumbers: [],
-  specialization: specializationEnum.options[0],
 };
 
 const Signup = () => {
   const router = useAppRouter();
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const { isLoaded, signUp } = useSignUp();
+  const dispatch = useAppDispatch();
   const [state, setState] = useState(initialState);
-
-  /** TODO: Can be move to server for dynamic value.*/
-  const studentNumberRegExp = `(20)(\\d{8})`;
-
-  /** True if the state.studentNumber is a valid student number. */
-  const isVerificationModalVisible = new RegExp(studentNumberRegExp).test(
-    state.studentNumber
-  );
 
   async function handleStudentCreation(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,9 +59,7 @@ const Signup = () => {
     const password = formdata.get('password') as string;
     const studentNumber = formdata.get('studentNumber') as string;
     const confirmPassword = formdata.get('confirmPassword') as string;
-    const specialization = formdata.get(
-      'specialization'
-    ) as InitialState['specialization'];
+    const specialization = formdata.get('specialization') as Specialization;
 
     if (!isLoaded) return;
 
@@ -93,11 +81,10 @@ const Signup = () => {
       if (response === undefined) throw new Error('Signing in failed.');
 
       await response.prepareEmailAddressVerification();
-      setState((prevState) => ({
-        ...prevState,
-        studentNumber,
-        specialization,
-      }));
+      dispatch(studentTemporarySetNumber(studentNumber));
+      dispatch(studentTemporarySetSpecialization(specialization));
+      dispatch(authenticationSetStatus('verifying account'));
+      router.push('/student/verify-email');
     } catch (err) {
       stylePasswordInputs('error');
       const error = err as { errors?: Record<string, string>[] };
@@ -107,46 +94,9 @@ const Signup = () => {
       alert(error.errors[0].message);
     }
   }
-  async function handleVerificationCode(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const code = formData.get('code') as string;
-
-    if (!isLoaded) return;
-
-    try {
-      const result = await signUp.attemptEmailAddressVerification({
-        code,
-      });
-
-      if (result.createdUserId === null) {
-        throw new Error('Created User ID is null!');
-      }
-
-      const studentData: StudentCreation = {
-        role: 'student',
-        userId: result.createdUserId,
-        studentNumber: state.studentNumber,
-        specialization: state.specialization,
-      };
-      const response = await fetch('/api/addUserType', {
-        method: 'POST',
-        body: JSON.stringify(studentData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error in assigning role to the student.');
-      }
-
-      setActive({ session: result.createdSessionId });
-    } catch (err) {
-      console.log(err);
-      alert('Error in processing verification code.');
-    }
-  }
 
   useEffect(() => {
-    async function getStudentNumber() {
+    async function getStudentNumbers() {
       try {
         const response = await fetch('/api/getStudentNumber', {
           method: 'GET',
@@ -165,10 +115,8 @@ const Signup = () => {
         alert('Error in fetching student numbers.');
       }
     }
-    return void getStudentNumber();
+    return void getStudentNumbers();
   }, []);
-
-  console.log(state);
 
   return (
     <div>
@@ -182,7 +130,7 @@ const Signup = () => {
         <div className="grid gap-4 bg-violet-500 p-2">
           <Input
             required
-            regExp={new RegExp(studentNumberRegExp)}
+            regExp={new RegExp(regExp.studentNumber)}
             name="studentNumber"
             type="text"
             placeholder="Student number here 20xxxxxxxx"
@@ -233,26 +181,6 @@ const Signup = () => {
             Sign Up
           </button>
         </div>
-      </form>
-      <form
-        onSubmit={handleVerificationCode}
-        className={`${isVerificationModalVisible ? 'opacity-100' : 'opacity-0'} duration-300 ease-in-out`}
-      >
-        <Input
-          name="code"
-          disabled={!isVerificationModalVisible}
-          regExp={/\d{6}/}
-          placeholder="Verification code xxxxxx"
-          maxLength={6}
-          type="text"
-        />
-        <button
-          disabled={!isVerificationModalVisible}
-          type="submit"
-          className="h-12 rounded-lg bg-foreground px-2 py-1 text-background shadow-sm duration-300 ease-in-out hover:bg-blue-500 hover:text-foreground"
-        >
-          Submit
-        </button>
       </form>
       <div className="grid bg-violet-400 p-2">
         <Heading text="Already have an account?" type="SUB_TITLE" />

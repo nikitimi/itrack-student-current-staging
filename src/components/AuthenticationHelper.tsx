@@ -1,14 +1,16 @@
 'use client';
 
 import Heading from '@/components/Heading';
-import {
-  specialization,
-  studentNumber,
-  studentType,
-  userId,
-  userType,
-} from '@/redux/reducers/authenticationReducer';
 import { useAppSelector } from '@/hooks/redux';
+import {
+  authenticationUserID,
+  authenticationUserType,
+} from '@/redux/reducers/authenticationReducer';
+import {
+  studentInfoNumber,
+  studentInfoSpecialization,
+  studentInfoType,
+} from '@/redux/reducers/studentInfoReducer';
 import { useEffect, useState } from 'react';
 
 type InitialState = 'loading' | 'ready';
@@ -16,14 +18,16 @@ const initialState = 'loading';
 
 const AuthenticationHelper = () => {
   const [status, setStatus] = useState<InitialState>(initialState);
-  const selector = useAppSelector((s) => s.authentication);
   const isReady = status === 'ready';
 
-  const _studentType = studentType(selector);
-  const _studentNumber = studentNumber(selector);
-  const _userId = userId(selector);
-  const _userType = userType(selector);
-  const _specialization = specialization(selector);
+  const authenticationSelector = useAppSelector((s) => s.authentication);
+  const _userId = authenticationUserID(authenticationSelector);
+  const _userType = authenticationUserType(authenticationSelector);
+
+  const studentInfoSelector = useAppSelector((s) => s.studentInfo);
+  const _studentNumber = studentInfoNumber(studentInfoSelector);
+  const _specialization = studentInfoSpecialization(studentInfoSelector);
+  const _studentType = studentInfoType(studentInfoSelector);
 
   useEffect(() => {
     setStatus('ready');

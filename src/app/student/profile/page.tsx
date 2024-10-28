@@ -3,7 +3,10 @@
 import Heading from '@/components/Heading';
 import { useAppDispatch } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
-import { authenticationSetUserType } from '@/redux/reducers/authenticationReducer';
+import {
+  authenticationSetStatus,
+  authenticationSetUserType,
+} from '@/redux/reducers/authenticationReducer';
 import { useClerk } from '@clerk/nextjs';
 
 const Profile = () => {
@@ -14,6 +17,7 @@ const Profile = () => {
   function handleSignout() {
     // TODO: Disable all buttons while signing out.
     clerk.signOut();
+    dispatch(authenticationSetStatus('no user'));
     dispatch(authenticationSetUserType('anonymous'));
     router.replace('/student/signin');
   }
