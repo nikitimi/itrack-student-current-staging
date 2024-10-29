@@ -1,15 +1,39 @@
 'use client';
 
-import Loading from '@/components/Loading';
-import certificate from '@/lib/enums/certificate';
-import { Suspense } from 'react';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import {
+  certificateList,
+  certificateRemove,
+} from '@/redux/reducers/certificateReducer';
+import { EMPTY_STRING } from '@/utils/constants';
 
 /** Loads the certificates uploaded by the student from the database. */
 const CertificateLoader = () => {
-  const certificates = certificate.options;
+  const _certificateList = certificateList(
+    useAppSelector((s) => s.certificate)
+  );
+  const dispatch = useAppDispatch();
+  const invalidExtraCharactersRegex = /(%\d{1}\D{1})/g;
+
+  function handleRemoveCertificate(
+    certificate: (typeof _certificateList)[number]
+  ) {
+    // const encodedCertificate = encodeURIComponent(certificate).replace(
+    //   invalidExtraCharactersRegex,
+    //   EMPTY_STRING
+    // );
+    // const tableRow = document.querySelector(
+    //   `tr#${encodedCertificate}`
+    // ) as HTMLTableRowElement;
+    // const toggleClasses = ['hidden'] as const;
+
+    // tableRow.classList.toggle(...toggleClasses);
+    console.log(certificate);
+    dispatch(certificateRemove(certificate));
+  }
 
   return (
-    <Suspense fallback={<Loading />}>
+    <>
       <div className="w-full bg-violet-400">
         <div className="p-2">
           <h3 className="font-geist-mono text-lg font-medium">
@@ -25,10 +49,10 @@ const CertificateLoader = () => {
                 </tr>
               </thead>
               <tbody className="rounded-lg">
-                {certificates.map((certificate) => {
+                {_certificateList.map((certificate) => {
                   const encodedCertificate = encodeURIComponent(
                     certificate
-                  ).replace(/(%\d{1}\D{1})/g, '');
+                  ).replace(invalidExtraCharactersRegex, EMPTY_STRING);
 
                   return (
                     <tr
@@ -45,14 +69,7 @@ const CertificateLoader = () => {
                         <div className="flex justify-center gap-2">
                           <button
                             className="h-12 w-24 rounded-lg bg-red-500 px-2 py-1 text-center text-white shadow-sm"
-                            onClick={() => {
-                              const tableRow = document.querySelector(
-                                `tr#${encodedCertificate}`
-                              ) as HTMLTableRowElement;
-                              const toggleClasses = ['hidden'] as const;
-
-                              tableRow.classList.toggle(...toggleClasses);
-                            }}
+                            onClick={() => handleRemoveCertificate(certificate)}
                           >
                             Remove
                           </button>
@@ -66,7 +83,7 @@ const CertificateLoader = () => {
           </section>
         </div>
       </div>
-    </Suspense>
+    </>
   );
 };
 
