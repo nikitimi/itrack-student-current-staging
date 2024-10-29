@@ -7,7 +7,7 @@ import {
   internshipSetCompletion,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
-import internshipResult from '@/utils/calculation/internshipResult';
+import internshipResult from '@/features/internship/utils/internshipResult';
 import type { InternshipResult } from '@/utils/types/internshipResult';
 import { useState } from 'react';
 

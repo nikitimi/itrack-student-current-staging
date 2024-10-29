@@ -1,6 +1,10 @@
-import gradeDivision from '@/features/internship/utils/gradeDivision';
 import type { InternshipCalculation } from '@/lib/calculations/types';
 import type { InternshipTask } from '@/lib/enums/internshipTask';
+import type { Specialization } from '@/lib/enums/specialization';
+import type { InternshipResult } from '@/utils/types/internshipResult';
+
+import { gradeDivision } from '@/features/internship/utils/constants';
+import internship from '@/lib/calculations/internship';
 import businessAnalyticJobEnum, {
   type BusinessAnalyticJob,
 } from '@/lib/enums/jobs/businessAnalytics';
@@ -10,9 +14,6 @@ import serviceManagementProgramJobEnum, {
 import webAndMobileDevelopmentJobEnum, {
   type WebAndMobileDevelopmentJob,
 } from '@/lib/enums/jobs/webAndMobileDevelopment';
-import type { Specialization } from '@/lib/enums/specialization';
-import type { InternshipResult } from '../types/internshipResult';
-import internship from '@/lib/calculations/internship';
 
 type PossibleJob =
   | BusinessAnalyticJob
@@ -94,8 +95,8 @@ export default function internshipResult(internshipResult: InternshipResult) {
   let taskPerformedCalculations: Record<string, number>[] = [];
   if (isStudentPerformedTasks) {
     allPerformedTasks.forEach((performedTasks) => {
-      Object.entries(performedTasks).forEach(([task, gradeJob]) => {
-        const [grade, job] = gradeJob as unknown as [
+      Object.entries(performedTasks).forEach((performedTask) => {
+        const [grade, job] = performedTask[1] as unknown as [
           1 | 2 | 3 | 4 | 5,
           PossibleJob,
         ];
