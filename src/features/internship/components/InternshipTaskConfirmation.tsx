@@ -7,10 +7,9 @@ import {
   internshipSetCompletion,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
+import internshipResult from '@/utils/calculation/internshipResult';
 import type { InternshipResult } from '@/utils/types/internshipResult';
-import React, { useState } from 'react';
-import gradeDivision from '../utils/gradeDivision';
-import internship from '@/lib/calculations/internship';
+import { useState } from 'react';
 
 const InternshipTaskConfirmation = () => {
   const [isTaskAlertPrompted, setTaskAlertPromp] = useState(false);
@@ -33,7 +32,7 @@ const InternshipTaskConfirmation = () => {
         );
       }
 
-      const internshipResult: InternshipResult = {
+      const result: InternshipResult = {
         tasks: _internshipTasks,
         isITCompany: _internshipCompanyQuestion,
         grade: _internshipGrade,
@@ -43,33 +42,13 @@ const InternshipTaskConfirmation = () => {
       const WRONG_NUMBER = -1;
 
       // TODO: Put to Database.
-      console.log({
-        ...internshipResult,
-        dateCreated: date.getTime(),
-        dateModified: WRONG_NUMBER,
-      });
-
-      // CHECKING
-      const getOneThird = 0.0001;
-      const thirtyThreeDecimal = parseInt(gradeDivision, 10) * getOneThird;
-      const isITCompanyGrade = internshipResult.isITCompany ? 50 : 100;
-
-      // TODO: Put here the specialization of the student.
-      const filteredInternshipCalculation = internship.filter(
-        (info) => info.specialization === 'BUSINESS_ANALYTICS'
-      );
-      const internshipCalculationFilteredToTasks = filteredInternshipCalculation
-        .map((info) => {
-          if (internshipResult.tasks.indexOf(info.task) !== -1) {
-            return info;
-          }
-        })
-        .filter((i) => i !== undefined);
       console.log(
-        isITCompanyGrade * thirtyThreeDecimal,
-        internshipResult.grade * thirtyThreeDecimal,
-        internshipCalculationFilteredToTasks,
-        thirtyThreeDecimal
+        {
+          ...result,
+          dateCreated: date.getTime(),
+          dateModified: WRONG_NUMBER,
+        },
+        internshipResult(result)
       );
 
       dispatch(internshipSetCompletion(true));
