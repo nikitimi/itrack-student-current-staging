@@ -12,7 +12,7 @@ export const HEADER_KEY = {
 /** URL consists of '/'. */
 export const ROUTE_DIVIDER = '/' as const;
 /** Default route of the app. */
-export const ABOUT_ROUTE = `${ROUTE_DIVIDER}`;
+export const ABOUT_ROUTE = `${ROUTE_DIVIDER}` as const;
 
 // The following will be used for setting state that needs to be the same type but is invalid.
 export const EMPTY_STRING = '';

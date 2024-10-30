@@ -11,19 +11,22 @@ import subjectsIndexIdentifier from '@/utils/subjectsIndexIdentifier';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { grades, gradesAdd } from '@/redux/reducers/gradeReducer';
 import { WRONG_NUMBER } from '@/utils/constants';
-import type { Specialization } from '@/lib/enums/specialization';
-import { ExtractedCOGDataResponse } from '@/server/lib/schema/extractedCOGData';
-import { specialization } from '@/redux/reducers/authenticationReducer';
+import regex from '@/utils/regex';
+import { useAppSelector } from '@/hooks/redux';
+import {
+  studentInfoNumber,
+  studentInfoSpecialization,
+} from '@/redux/reducers/studentInfoReducer';
 
 type ExtraProps = {
   yearLevelIndex: number;
 };
 
 const COGDataExtractor = () => {
-  /** TODO: Link specialization here. */
-  const _specialization = specialization(
-    useAppSelector((s) => s.authentication)
-  );
+  const selector = useAppSelector((s) => s.studentInfo);
+  const studentNumber = studentInfoNumber(selector);
+  const specialization = studentInfoSpecialization(selector);
+  const [state, setState] = useState(initialState);
   const subjectList = Object.entries(_subjects)
     .sort(
       (a, b) => subjectsIndexIdentifier(a[0]) - subjectsIndexIdentifier(b[0])
@@ -59,6 +62,7 @@ const COGDataExtractor = () => {
       }
       for (const { name, target, regExp } of regExps) {
         let value = header.match(regExp)?.[0] as string;
+        const isStudentNumber = regex.studentNumber.test(value);
         const isSemester = name === 'semester';
         const isYearlevel = name === 'yearLevel';
 
@@ -82,6 +86,11 @@ const COGDataExtractor = () => {
 
               value = chooseEnum.options[index];
             }
+            if (isStudentNumber && value !== studentNumber) {
+              throw new Error(
+                `Your student number is    ${studentNumber}\nCOG's student number is: ${value}\nPlease use your own COG.`
+              );
+            }
             resultHolder = { ...resultHolder, [name]: value };
             break;
 
@@ -91,7 +100,7 @@ const COGDataExtractor = () => {
                 body,
                 semester: resultHolder?.semester as Semester,
                 subjects: subjectList[resultHolder.yearLevelIndex],
-                targetSpecialization: _specialization as Specialization,
+                targetSpecialization: specialization as Specialization,
               };
 
               const codes = subjectsHelper(subjectArgument);
@@ -135,20 +144,29 @@ const COGDataExtractor = () => {
       }
     } catch (e) {
       const error = e as Error;
+      console.error(error);
       alert(error.message);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="file" type="file" required />
-      <button
-        type="submit"
-        className="h-12 rounded-lg border bg-foreground px-2 py-1 text-background shadow-sm duration-300 ease-in-out hover:border-blue-600 hover:bg-blue-500 hover:text-slate-300"
-      >
-        Reveal
-      </button>
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        <input name="file" type="file" required />
+        <button>Reveal</button>
+      </form>
+      {Object.entries(state).map(([k, v]) => {
+        if (k === 'yearLevelIndex') return <p key={k}></p>;
+
+        const stringfied = typeof v === 'string' ? v : JSON.stringify(v);
+
+        return (
+          <p key={k} className="flex justify-between p-4 capitalize">
+            {k}:<span>{stringfied}</span>
+          </p>
+        );
+      })}
+    </>
   );
 };
 
