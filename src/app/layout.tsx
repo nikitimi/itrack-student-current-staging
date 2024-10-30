@@ -15,6 +15,7 @@ import StoreProvider from '@/components/StoreProvider';
 import { EMPTY_STRING, HEADER_KEY } from '@/utils/constants';
 
 import '@/app/globals.css';
+import getDatabaseInformations from '@/server/utils/getDatabaseInformations';
 
 const geistSans = localFont({
   src: '../fonts/GeistVF.woff',
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   description: 'Tracking your future!',
 };
 
-export default function RootLayout({ children }: Children) {
+export default async function RootLayout({ children }: Children) {
   const headerList = headers();
 
   // TODO: Move this out to a separate global client component handler to set correct user type.
@@ -45,12 +46,15 @@ export default function RootLayout({ children }: Children) {
     HEADER_KEY.specialization
   ) as Specialization;
 
+  const result = await getDatabaseInformations(studentNumber);
+
   const props = {
     role,
     specialization,
     studentType,
     studentNumber,
     userId,
+    grades: result,
   };
 
   return (

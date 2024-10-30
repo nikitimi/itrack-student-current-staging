@@ -17,7 +17,11 @@ const gradeSlice = createSlice({
   initialState,
   reducers: {
     gradesAdd(state, action: { payload: InitialState['grades'][number] }) {
-      state.grades.push(action.payload);
+      const { yearLevel, semester } = action.payload;
+      const filteredResult = state.grades.filter(
+        (g) => g.yearLevel === yearLevel && g.semester === semester
+      );
+      if (filteredResult.length === 0) state.grades.push(action.payload);
     },
 
     gradeResetState(state) {

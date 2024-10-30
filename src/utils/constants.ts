@@ -16,4 +16,5 @@ export const ABOUT_ROUTE = `${ROUTE_DIVIDER}` as const;
 
 // The following will be used for setting state that needs to be the same type but is invalid.
 export const EMPTY_STRING = '';
-export const WRONG_NUMBER = NaN;
+export const WRONG_NUMBER = -1;
+export const NUMBER_OF_SEMESTER = 6;

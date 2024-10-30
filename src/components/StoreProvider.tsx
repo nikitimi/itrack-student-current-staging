@@ -6,7 +6,7 @@ import type { UserRole } from '@/lib/enums/userRole';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 
-import { useAppDispatch } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   authenticationSetUserID,
   authenticationSetUserType,
@@ -20,6 +20,9 @@ import {
   studentInfoSetSpecialization,
   studentInfoSetType,
 } from '@/redux/reducers/studentInfoReducer';
+import GradeInfo from '@/utils/types/gradeInfo';
+import { MongoExtra } from '@/lib/schema/mongoExtra';
+import { grades, gradesAdd } from '@/redux/reducers/gradeReducer';
 
 type StoreProviderParams = {
   userId: string | null;
@@ -27,6 +30,7 @@ type StoreProviderParams = {
   studentType: StudentType;
   studentNumber: string;
   role: UserRole;
+  grades?: (GradeInfo & MongoExtra)[];
 } & Children;
 
 export default function StoreProvider({
@@ -43,6 +47,13 @@ export default function StoreProvider({
 const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
   const { role, specialization, studentType, studentNumber, userId } = rest;
   const dispatch = useAppDispatch();
+  const _grades = grades(useAppSelector((s) => s.grade));
+
+  useEffect(() => {
+    if (rest.grades !== undefined) {
+      rest.grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo)));
+    }
+  }, [rest.grades, _grades, dispatch]);
 
   useEffect(() => {
     dispatch(studentInfoSetSpecialization(specialization));

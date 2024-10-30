@@ -66,11 +66,11 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(response);
-  } catch (err) {
-    console.log(err);
+  } catch (e) {
+    const error = e as Error;
     const errorResponse: GetStudentNumberResponse = {
       data: [],
-      errorMessage: ['Server error in clerk client.'],
+      errorMessage: [error.message],
     };
     return NextResponse.json(errorResponse, { status: 500 });
   }

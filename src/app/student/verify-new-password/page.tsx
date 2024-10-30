@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, type FormEvent } from 'react';
+import { type FormEvent } from 'react';
 
 import Input from '@/components/Input';
 import type { UserRole } from '@/lib/enums/userRole';
