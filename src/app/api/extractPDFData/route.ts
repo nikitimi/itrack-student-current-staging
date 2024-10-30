@@ -6,7 +6,18 @@ import PDFParser, { type Output } from 'pdf2json';
 import { EMPTY_STRING } from '@/utils/constants';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request
+): Promise<NextResponse<ExtractPDFDataResponse>> {
+  let response: ExtractPDFDataResponse = {
+    data: {
+      body: EMPTY_STRING,
+      footer: EMPTY_STRING,
+      header: EMPTY_STRING,
+    },
+    errorMessage: [],
+  };
+
   try {
     const pdfParser = new PDFParser(true);
     const headerTexts: string[] = [];
@@ -15,14 +26,6 @@ export async function POST(request: Request) {
 
     const formdata = await request.formData();
     const documentHolder = formdata.get('file') as File | null;
-    let response: ExtractPDFDataResponse = {
-      data: {
-        body: EMPTY_STRING,
-        footer: EMPTY_STRING,
-        header: EMPTY_STRING,
-      },
-      errorMessage: [],
-    };
 
     if (!documentHolder) {
       response = { ...response, errorMessage: ['No file provided.'] };
@@ -106,6 +109,10 @@ export async function POST(request: Request) {
   } catch (e) {
     const error = e as Error;
     console.log(error.message);
-    return NextResponse.json({ errorMessage: 'Error!' }, { status: 500 });
+
+    return NextResponse.json(
+      { ...response, errorMessage: [error.message] },
+      { status: 500 }
+    );
   }
 }

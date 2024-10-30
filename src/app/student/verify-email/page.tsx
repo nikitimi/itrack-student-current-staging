@@ -3,8 +3,6 @@
 import { type FormEvent } from 'react';
 
 import Input from '@/components/Input';
-import type { UserRole } from '@/lib/enums/userRole';
-import type { Specialization } from '@/lib/enums/specialization';
 import { useSignUp } from '@clerk/nextjs';
 import {
   authenticationSetStatus,
@@ -17,13 +15,7 @@ import {
   studentTemporaryResetState,
   studentTemporarySpecialization,
 } from '@/redux/reducers/studentTemporaryReducer';
-
-export type StudentCreation = {
-  role: UserRole;
-  userId: string;
-  studentNumber: string;
-  specialization: Specialization;
-};
+import type StudentCreation from '@/utils/types/studentCreation';
 
 const VerifyEmail = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -37,7 +29,8 @@ const VerifyEmail = () => {
     useAppSelector((s) => s.authentication)
   );
 
-  if (_authenticationStatus !== 'verifying account') return router.back();
+  if (window !== undefined && _authenticationStatus !== 'verifying account')
+    return router.back();
 
   async function handleVerificationCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -5,10 +5,7 @@ import Heading from '@/components/Heading';
 import Input from '@/components/Input';
 import { useAppDispatch } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
-import {
-  authenticationResetState,
-  authenticationSetStatus,
-} from '@/redux/reducers/authenticationReducer';
+import { authenticationResetState } from '@/redux/reducers/authenticationReducer';
 import regExp from '@/utils/regex';
 import { useSignIn } from '@clerk/nextjs';
 import React, { useEffect } from 'react';

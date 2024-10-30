@@ -13,13 +13,14 @@ import regExp from '@/utils/regex';
 import specializationEnum, {
   type Specialization,
 } from '@/lib/enums/specialization';
-import { StudentCreation } from '@/app/student/verify-email/page';
+
 import { useAppDispatch } from '@/hooks/redux';
 import { authenticationSetStatus } from '@/redux/reducers/authenticationReducer';
 import {
   studentTemporarySetNumber,
   studentTemporarySetSpecialization,
 } from '@/redux/reducers/studentTemporaryReducer';
+import type StudentCreation from '@/utils/types/studentCreation';
 
 type InitialState = {
   studentNumbers: StudentCreation['studentNumber'][];

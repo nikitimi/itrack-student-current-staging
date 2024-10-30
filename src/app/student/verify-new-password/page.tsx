@@ -1,6 +1,6 @@
 'use client';
 
-import type { FormEvent } from 'react';
+import { useEffect, type FormEvent } from 'react';
 
 import Input from '@/components/Input';
 import type { UserRole } from '@/lib/enums/userRole';
@@ -28,7 +28,11 @@ const VerifyNewPassword = () => {
   const selector = useAppSelector((s) => s.authentication);
   const _authenticationStatus = authenticationStatus(selector);
 
-  if (_authenticationStatus !== 'verifying new password') return router.back();
+  if (
+    window !== undefined &&
+    _authenticationStatus !== 'verifying new password'
+  )
+    return router.back();
 
   async function confirmForgotPassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

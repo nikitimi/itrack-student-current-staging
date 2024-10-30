@@ -12,11 +12,12 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { grades, gradesAdd } from '@/redux/reducers/gradeReducer';
 import { WRONG_NUMBER } from '@/utils/constants';
 import regex from '@/utils/regex';
-import { useAppSelector } from '@/hooks/redux';
 import {
   studentInfoNumber,
   studentInfoSpecialization,
 } from '@/redux/reducers/studentInfoReducer';
+import { Specialization } from '@/lib/enums/specialization';
+import { ExtractedCOGDataResponse } from '@/server/lib/schema/extractedCOGData';
 
 type ExtraProps = {
   yearLevelIndex: number;
@@ -26,7 +27,6 @@ const COGDataExtractor = () => {
   const selector = useAppSelector((s) => s.studentInfo);
   const studentNumber = studentInfoNumber(selector);
   const specialization = studentInfoSpecialization(selector);
-  const [state, setState] = useState(initialState);
   const subjectList = Object.entries(_subjects)
     .sort(
       (a, b) => subjectsIndexIdentifier(a[0]) - subjectsIndexIdentifier(b[0])
@@ -155,17 +155,6 @@ const COGDataExtractor = () => {
         <input name="file" type="file" required />
         <button>Reveal</button>
       </form>
-      {Object.entries(state).map(([k, v]) => {
-        if (k === 'yearLevelIndex') return <p key={k}></p>;
-
-        const stringfied = typeof v === 'string' ? v : JSON.stringify(v);
-
-        return (
-          <p key={k} className="flex justify-between p-4 capitalize">
-            {k}:<span>{stringfied}</span>
-          </p>
-        );
-      })}
     </>
   );
 };
