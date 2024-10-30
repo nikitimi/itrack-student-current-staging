@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export type Certificate = z.infer<typeof certificateEnum>;
+
 const certificateEnum = z.enum([
   'PROGRAMMING_AND_DEVELOPMENT',
   'NETWORKING_AND_CYBERSECURITY',
