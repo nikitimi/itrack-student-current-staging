@@ -3,6 +3,8 @@ import React, { Suspense } from 'react';
 import Header from '@/components/Header';
 import Loading from '@/components/Loading';
 import COGDataExtractor from '@/features/grade/student/components/COGDataExtractor';
+import COGDataLoader from '@/features/grade/student/components/COGDataLoader';
+import GradeConfirmation from '@/features/grade/student/components/GradeConfirmation';
 import ModuleNav from '@/features/modules/student/components/ModuleNav';
 
 const Grade = () => {
@@ -11,7 +13,15 @@ const Grade = () => {
       <Header />
       <ModuleNav />
       <Suspense fallback={<Loading />}>
-        <COGDataExtractor />
+        <Suspense fallback={<Loading />}>
+          <COGDataExtractor />
+        </Suspense>
+      </Suspense>
+      <Suspense fallback={<Loading />}>
+        <COGDataLoader />
+      </Suspense>
+      <Suspense fallback={<Loading />}>
+        <GradeConfirmation />
       </Suspense>
     </>
   );

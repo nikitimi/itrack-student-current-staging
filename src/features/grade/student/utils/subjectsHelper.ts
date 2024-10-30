@@ -1,12 +1,7 @@
-import type * as subjects from '@/lib/calculations/grades';
 import type { Semester } from '@/lib/enums/semester';
 import type { Specialization } from '@/lib/enums/specialization';
-
-export type SubjectDetails =
-  | (typeof subjects.firstYearSubjects)[number]
-  | (typeof subjects.secondYearSubjects)[number]
-  | (typeof subjects.thirdYearSubjects)[number]
-  | (typeof subjects.fourthYearSubjects)[number];
+import type { SubjectCodesFor2018CurriculumEnum } from '@/lib/enums/subjectCodesFor2018Curriculum';
+import type { SubjectDetails } from '@/utils/types/gradeInfo';
 
 type SubjectsHelperProps = {
   semester: Semester;
@@ -20,7 +15,7 @@ type SubjectsHelperProps = {
  */
 function subjectsHelper(props: SubjectsHelperProps) {
   const result: {
-    subjectCode: SubjectDetails['subjectCode'];
+    subjectCode: SubjectCodesFor2018CurriculumEnum;
     index: number;
   }[] = [];
   const subjects = props.subjects.filter(
