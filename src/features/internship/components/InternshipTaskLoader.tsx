@@ -1,11 +1,31 @@
 'use client';
 
 import Loading from '@/components/Loading';
-import internshipTask from '@/lib/enums/internshipTask';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { type InternshipTask } from '@/lib/enums/internshipTask';
+import {
+  internshipTaskRemove,
+  internshipTasks,
+} from '@/redux/reducers/internshipReducer';
+import { EMPTY_STRING } from '@/utils/constants';
 import React, { Suspense } from 'react';
 
 const InternshipTaskLoader = () => {
-  const internshipTasks = internshipTask.options;
+  const selector = useAppSelector((s) => s.internship);
+  const _internshipTasks = internshipTasks(selector);
+  const dispatch = useAppDispatch();
+  const nonAlphabetCharacters = /[()/]/g;
+
+  function handleRemoveTask(task: InternshipTask) {
+    const tableRow = document.querySelector(
+      `tr#${task.replace(nonAlphabetCharacters, EMPTY_STRING)}`
+    ) as HTMLTableRowElement;
+    const toggleClasses = ['hidden'] as const;
+
+    tableRow.classList.toggle(...toggleClasses);
+    dispatch(internshipTaskRemove(task));
+  }
+
   return (
     <Suspense fallback={<Loading />}>
       <div className="bg-violet-600 p-2">
@@ -21,11 +41,11 @@ const InternshipTaskLoader = () => {
               </tr>
             </thead>
             <tbody>
-              {internshipTasks.map((task) => {
+              {_internshipTasks.map((task) => {
                 const taskName = task.replace(/_/g, ' ');
                 return (
                   <tr
-                    id={task}
+                    id={task.replace(nonAlphabetCharacters, EMPTY_STRING)}
                     key={task}
                     className="h-12 rounded-lg bg-background px-2 py-1 shadow-sm"
                   >
@@ -36,14 +56,7 @@ const InternshipTaskLoader = () => {
                       <div className="flex flex-row justify-center gap-2 p-2">
                         <button
                           className="h-12 rounded-lg bg-red-400 px-2 py-1 shadow-sm"
-                          onClick={() => {
-                            const tableRow = document.querySelector(
-                              `tr#${task}`
-                            ) as HTMLTableRowElement;
-                            const toggleClasses = ['hidden'] as const;
-
-                            tableRow.classList.toggle(...toggleClasses);
-                          }}
+                          onClick={() => handleRemoveTask(task)}
                         >
                           Remove
                         </button>

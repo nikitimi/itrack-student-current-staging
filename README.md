@@ -27,8 +27,8 @@ There are 3 modules for computation for the students.
 - Internship - 50%
   - Calculation for internship:
     - Grade = 33.33%
-    - Tasks = 33.33%
-    - Type of Company = 33.33%
+    - Tasks = 33.33%, if there's no task performed by the student, this will result to 0, else 100.
+    - Type of Company = 33.33%, If not IT Company the result will be 0, else 100.
 
 These 3 modules will have a breakdown of the Jobs well suited for the students.
 
