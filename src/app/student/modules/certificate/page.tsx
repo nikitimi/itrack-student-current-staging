@@ -1,25 +1,29 @@
 import Header from '@/components/Header';
+import Loading from '@/components/Loading';
+import CertificateConfirmation from '@/features/certificate/student/components/CertificateConfirmation';
 import CertificateLoader from '@/features/certificate/student/components/CertificateLoader';
 import CertificateSelector from '@/features/certificate/student/components/CertificateSelector';
+import certificateTest from '@/features/certificate/test/certificateTest';
 import ModuleNav from '@/features/modules/student/components/ModuleNav';
-import React from 'react';
+import { Suspense } from 'react';
 
-const Certificate = () => {
+const Page = () => {
+  console.log(certificateTest());
   return (
     <div>
       <Header />
       <ModuleNav />
-      <CertificateSelector />
-      <CertificateLoader />
-      <div className="w-full bg-violet-500 p-2">
-        <div className="grid">
-          <button className="h-12 rounded-lg bg-background px-2 py-1 text-foreground shadow-sm duration-300 ease-in-out hover:bg-green-600">
-            Submit
-          </button>
-        </div>
-      </div>
+      <Suspense fallback={<Loading />}>
+        <CertificateSelector />
+      </Suspense>
+      <Suspense fallback={<Loading />}>
+        <CertificateLoader />
+      </Suspense>
+      <Suspense fallback={<Loading />}>
+        <CertificateConfirmation />
+      </Suspense>
     </div>
   );
 };
 
-export default Certificate;
+export default Page;

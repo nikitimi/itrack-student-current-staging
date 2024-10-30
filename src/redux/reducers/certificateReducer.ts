@@ -25,6 +25,15 @@ const certificateSlice = createSlice({
         state.certificateList.push(action.payload);
       }
     },
+    certificateRemove(
+      state,
+      action: { payload: (typeof initialState)['certificateList'][number] }
+    ) {
+      if (state.certificateList.includes(action.payload)) {
+        const index = state.certificateList.indexOf(action.payload);
+        state.certificateList.splice(index, 1);
+      }
+    },
     certificateModuleStateUpdate(
       state,
       action: { payload: (typeof initialState)['certificateModuleCompleted'] }
@@ -41,14 +50,16 @@ const certificateSlice = createSlice({
 
 // SELECTORS.
 
-export const certificateList = (s: RootState) => s.certificate.certificateList;
+export const certificateList = (s: RootState['certificate']) =>
+  s.certificateList;
 /** Controls whether the student can input in certificate module.  */
-export const certificateModuleCompleted = (s: RootState) =>
-  s.certificate.certificateModuleCompleted;
+export const certificateModuleCompleted = (s: RootState['certificate']) =>
+  s.certificateModuleCompleted;
 
 // ACTIONS.
 export const {
   certificateAdd,
+  certificateRemove,
   certificateModuleStateUpdate,
   certificateResetState,
 } = certificateSlice.actions;
