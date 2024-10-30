@@ -46,7 +46,7 @@ export default async function RootLayout({ children }: Children) {
     HEADER_KEY.specialization
   ) as Specialization;
 
-  const result = await getDatabaseInformations(studentNumber);
+  const { grades, certificate } = await getDatabaseInformations(studentNumber);
 
   const props = {
     role,
@@ -54,7 +54,8 @@ export default async function RootLayout({ children }: Children) {
     studentType,
     studentNumber,
     userId,
-    grades: result,
+    grades,
+    certificate,
   };
 
   return (

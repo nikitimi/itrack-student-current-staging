@@ -23,6 +23,11 @@ import {
 import GradeInfo from '@/utils/types/gradeInfo';
 import { MongoExtra } from '@/lib/schema/mongoExtra';
 import { grades, gradesAdd } from '@/redux/reducers/gradeReducer';
+import { Certificate } from '@/lib/enums/certificate';
+import {
+  certificateAdd,
+  certificateModuleStateUpdate,
+} from '@/redux/reducers/certificateReducer';
 
 type StoreProviderParams = {
   userId: string | null;
@@ -31,6 +36,7 @@ type StoreProviderParams = {
   studentNumber: string;
   role: UserRole;
   grades?: (GradeInfo & MongoExtra)[];
+  certificate?: Certificate[];
 } & Children;
 
 export default function StoreProvider({
@@ -48,6 +54,15 @@ const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
   const { role, specialization, studentType, studentNumber, userId } = rest;
   const dispatch = useAppDispatch();
   const _grades = grades(useAppSelector((s) => s.grade));
+
+  useEffect(() => {
+    if (rest.certificate !== undefined) {
+      dispatch(certificateModuleStateUpdate(true));
+      rest.certificate.forEach((certificate) =>
+        dispatch(certificateAdd(certificate))
+      );
+    }
+  }, [rest.certificate, _grades, dispatch]);
 
   useEffect(() => {
     if (rest.grades !== undefined) {

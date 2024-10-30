@@ -2,11 +2,15 @@
 
 import type { CertificateResult } from '@/utils/types/certificateResult';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { useAppSelector } from '@/hooks/redux';
-import { certificateList } from '@/redux/reducers/certificateReducer';
-import certificateResult from '@/features/certificate/student/utils/certificateResult';
+import {
+  certificateList,
+  certificateModuleCompleted,
+} from '@/redux/reducers/certificateReducer';
+import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
+import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 
 type InitialState = {
   status: 'empty certificate not triggered' | 'empty certificate triggered';
@@ -18,24 +22,48 @@ const initialState: InitialState = {
 
 const CertificateConfirmation = () => {
   const [state, setState] = useState(initialState);
-  const _certificateList = certificateList(
-    useAppSelector((s) => s.certificate)
-  );
+  const selector = useAppSelector((s) => s.certificate);
+  const _certificateList = certificateList(selector);
+  const isCertificateCompleted = certificateModuleCompleted(selector);
+
+  const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
   const isCertificateListEmpty = _certificateList.length === 0;
-  function handleSubmit() {
+
+  async function handleSubmit() {
     try {
+      if (isCertificateCompleted)
+        throw new Error("You've already uploaded your certificates.");
+
       if (
         isCertificateListEmpty &&
         state.status === 'empty certificate not triggered'
       )
         throw new Error("Are you sure you didn't take any certificates?");
 
-      //TODO: Save to database
       const result: CertificateResult = {
         certificateList: _certificateList,
       };
 
-      console.log(certificateResult(result));
+      // Posting to database.
+      const postingCertificate = await fetch('/api/mongo/certificate', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...result,
+          studentNumber,
+        }),
+      });
+
+      const responseBody = await postingCertificate.json();
+
+      if (!postingCertificate.ok) {
+        throw new Error(
+          (responseBody as BaseAPIResponse<string>).errorMessage[0]
+        );
+      }
+      console.log(responseBody);
+
+      // TODO: Make UI to present this.
+      // console.log(certificateResult(result));
     } catch (e) {
       setState((prevState) => ({
         ...prevState,

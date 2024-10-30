@@ -6,7 +6,7 @@ import {
   certificateAdd,
   certificateList,
 } from '@/redux/reducers/certificateReducer';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /** The uploader of certificates to the database. */
 const CertificateSelector = () => {
@@ -20,6 +20,7 @@ const CertificateSelector = () => {
   );
   const isCertificateOptionEmpty = certificates.length === 0;
   const dispatch = useAppDispatch();
+  const [isCertificateLoaded, setCertificateLoad] = useState(false);
 
   function handleClick() {
     try {
@@ -38,6 +39,8 @@ const CertificateSelector = () => {
     }
   }
 
+  useEffect(() => setCertificateLoad(true), []);
+
   return (
     <>
       <div className="w-full bg-violet-500">
@@ -46,29 +49,54 @@ const CertificateSelector = () => {
             Certificate Selector
           </h3>
           <div className="grid grid-flow-col gap-2 p-2">
-            <select
-              disabled={isCertificateOptionEmpty}
-              ref={selectRef}
-              name="certificate"
-              className="h-12 rounded-lg p-2 text-black shadow-sm"
-            >
-              {certificates.map((certificate) => {
-                const formattedCertificate = certificate.replace(
-                  allUnderscoreRegExp,
-                  ' '
-                );
+            {isCertificateLoaded ? (
+              <select
+                disabled={isCertificateOptionEmpty}
+                ref={selectRef}
+                name="certificate"
+                className="h-12 rounded-lg p-2 text-black shadow-sm"
+              >
+                {certificates.map((certificate) => {
+                  const formattedCertificate = certificate.replace(
+                    allUnderscoreRegExp,
+                    ' '
+                  );
 
-                return (
-                  <option
-                    key={certificate}
-                    value={certificate}
-                    className="text-black"
-                  >
-                    {formattedCertificate}
-                  </option>
-                );
-              })}
-            </select>
+                  return (
+                    <option
+                      key={certificate}
+                      value={certificate}
+                      className="text-black"
+                    >
+                      {formattedCertificate}
+                    </option>
+                  );
+                })}
+              </select>
+            ) : (
+              <select
+                disabled
+                name="certificate"
+                className="h-12 rounded-lg p-2 text-slate-500 shadow-sm"
+              >
+                {certificateEnum.options.map((certificate) => {
+                  const formattedCertificate = certificate.replace(
+                    allUnderscoreRegExp,
+                    ' '
+                  );
+
+                  return (
+                    <option
+                      key={certificate}
+                      value={certificate}
+                      className="text-black"
+                    >
+                      {formattedCertificate}
+                    </option>
+                  );
+                })}
+              </select>
+            )}
             <button
               disabled={isCertificateOptionEmpty}
               onClick={handleClick}

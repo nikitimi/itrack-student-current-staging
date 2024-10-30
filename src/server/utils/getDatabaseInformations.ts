@@ -7,32 +7,60 @@ import { headers } from 'next/headers';
 
 import { HEADER_KEY } from '@/utils/constants';
 import { BaseAPIResponse } from '../lib/schema/apiResponse';
+import { Certificate } from '@/lib/enums/certificate';
+import regExp from '@/utils/regex';
 
-async function getDatabaseInformations(studentNumber: string) {
+type GetDatabaseInformation = {
+  grades: (GradeInfo & MongoExtra)[];
+  certificate: Certificate[];
+};
+
+function getUrl(uri: string, studentNumber: string, origin: string) {
+  if (!regExp.studentNumber.test(studentNumber)) return new URL('', origin);
+  return new URL(`${uri}?${new URLSearchParams({ studentNumber })}`, origin);
+}
+
+async function getDatabaseInformations(
+  studentNumber: string
+): Promise<GetDatabaseInformation> {
   try {
     const headerList = headers();
     const origin = headerList.get(HEADER_KEY.origin) as string;
 
-    const url = new URL(
-      '/api/mongo/grades?' + new URLSearchParams({ studentNumber }),
-      origin
+    const getGrades = await fetch(
+      getUrl('/api/mongo/grades', studentNumber, origin),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
+    //Check if there is a existing data in the database.
+    const getCertificate = await fetch(
+      getUrl('/api/mongo/certificate', studentNumber, origin),
+      {
+        method: 'GET',
+      }
+    );
+    const certificateBody = (await getCertificate.json()) as BaseAPIResponse<
+      (Certificate & MongoExtra)[]
+    >;
+    const certificates = Object.entries(certificateBody.data[0])
+      .filter(([key]) => !isNaN(parseInt(key, 10)))
+      .map(([, v]) => v);
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const { data } = (await response.json()) as BaseAPIResponse<
+    const gradeBody = (await getGrades.json()) as BaseAPIResponse<
       (GradeInfo & MongoExtra)[]
     >;
-    return data;
+    return {
+      grades: gradeBody.data,
+      certificate: certificates as GetDatabaseInformation['certificate'],
+    };
   } catch (e) {
     const error = e as Error;
     console.log(error.message);
-    const data = [] as (GradeInfo & MongoExtra)[];
-    return data;
+    return { certificate: [], grades: [] };
   }
 }
 export default getDatabaseInformations;

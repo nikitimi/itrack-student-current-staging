@@ -1,14 +1,17 @@
 'use client';
 
+import Loading from '@/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   certificateList,
   certificateRemove,
 } from '@/redux/reducers/certificateReducer';
 import { EMPTY_STRING } from '@/utils/constants';
+import { useEffect, useState } from 'react';
 
 /** Loads the certificates uploaded by the student from the database. */
 const CertificateLoader = () => {
+  const [isCertificateLoaded, setCertificateState] = useState(false);
   const _certificateList = certificateList(
     useAppSelector((s) => s.certificate)
   );
@@ -18,19 +21,12 @@ const CertificateLoader = () => {
   function handleRemoveCertificate(
     certificate: (typeof _certificateList)[number]
   ) {
-    // const encodedCertificate = encodeURIComponent(certificate).replace(
-    //   invalidExtraCharactersRegex,
-    //   EMPTY_STRING
-    // );
-    // const tableRow = document.querySelector(
-    //   `tr#${encodedCertificate}`
-    // ) as HTMLTableRowElement;
-    // const toggleClasses = ['hidden'] as const;
-
-    // tableRow.classList.toggle(...toggleClasses);
-    console.log(certificate);
     dispatch(certificateRemove(certificate));
   }
+
+  useEffect(() => setCertificateState(true), []);
+
+  if (!isCertificateLoaded) return <Loading />;
 
   return (
     <>

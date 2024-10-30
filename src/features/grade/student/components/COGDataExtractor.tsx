@@ -155,7 +155,7 @@ const COGDataExtractor = () => {
 
   useEffect(
     () => setInputAvailability(_grades.length === NUMBER_OF_SEMESTER),
-    []
+    [_grades.length]
   );
 
   return (
