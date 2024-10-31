@@ -1,28 +1,15 @@
 'server only';
 
 import type { MongoExtra } from '@/lib/schema/mongoExtra';
+import type { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import type GradeInfo from '@/utils/types/gradeInfo';
 
-import { headers } from 'next/headers';
-
-import { HEADER_KEY } from '@/utils/constants';
-import { BaseAPIResponse } from '../lib/schema/apiResponse';
+import fetchHelper from '@/server/utils/fetch';
 
 async function getDatabaseInformations(studentNumber: string) {
   try {
-    const headerList = headers();
-    const origin = headerList.get(HEADER_KEY.origin) as string;
-
-    const url = new URL(
-      '/api/mongo/grades?' + new URLSearchParams({ studentNumber }),
-      origin
-    );
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const response = await fetchHelper('/api/mongo/grades', 'GET', {
+      studentNumber,
     });
     const { data } = (await response.json()) as BaseAPIResponse<
       (GradeInfo & MongoExtra)[]

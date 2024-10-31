@@ -47,11 +47,15 @@ const COGDataExtractor = () => {
     };
 
     try {
-      const formData = new FormData(event.currentTarget);
-      const response = await fetch('/api/extractPDFData', {
-        method: 'POST',
-        body: formData,
-      });
+      const formdata = new FormData(event.currentTarget);
+      const response = await fetchHelper(
+        '/api/extractPDFData',
+        'POST',
+        {
+          studentNumber: undefined,
+        },
+        formdata
+      );
 
       if (!response.ok) {
         throw new Error('File upload failed');
@@ -157,7 +161,7 @@ const COGDataExtractor = () => {
 
   useEffect(
     () => setInputAvailability(_grades.length === NUMBER_OF_SEMESTER),
-    []
+    [_grades.length]
   );
 
   return (
