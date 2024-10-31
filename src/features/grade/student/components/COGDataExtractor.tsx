@@ -20,6 +20,7 @@ import { Specialization } from '@/lib/enums/specialization';
 import { ExtractedCOGDataResponse } from '@/server/lib/schema/extractedCOGData';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { useEffect, useState } from 'react';
+import fetchHelper from '@/utils/fetch';
 
 type ExtraProps = {
   yearLevelIndex: number;
@@ -132,15 +133,16 @@ const COGDataExtractor = () => {
 
               console.log('removing year level index: ', yearLevelIndex);
 
-              const response = await fetch('/api/mongo/grades', {
-                method: 'POST',
-                body: JSON.stringify(rest),
-              });
+              const response = await fetchHelper(
+                '/api/mongo/grades',
+                'POST',
+                rest
+              );
+              console.log(response);
               const result = (await response.json()) as BaseAPIResponse<
                 string[]
               >;
-              if (result.errorMessage.length > 0)
-                throw new Error(result.errorMessage.toString());
+              if (!response.ok) throw new Error(result.errorMessage.toString());
               dispatch(gradesAdd(rest));
             }
             break;
