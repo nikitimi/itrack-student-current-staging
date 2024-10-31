@@ -6,7 +6,7 @@ import type { APIMethods } from '@/server/lib/enum/apiMethods';
 
 export default async function fetchHelper<
   T extends Partial<Pick<MongoExtra, 'studentNumber'>>,
->(uri: APIRoutes, method: APIMethods, body: T) {
+>(uri: APIRoutes, method: APIMethods, body: T, formdata?: FormData) {
   const { studentNumber } = body;
   const origin = new URL(window.location.href).origin;
 
@@ -29,7 +29,7 @@ export default async function fetchHelper<
     case 'POST':
       return await fetch(baseURL, {
         ...fetchOptions,
-        body: JSON.stringify(body),
+        body: formdata === undefined ? JSON.stringify(body) : formdata,
       });
   }
 }
