@@ -77,8 +77,9 @@ const CertificateConfirmation = () => {
     <div className="w-full bg-violet-500 p-2">
       <div className="grid">
         <button
-          onClick={handleSubmit}
           className="h-12 rounded-lg bg-background px-2 py-1 text-foreground shadow-sm duration-300 ease-in-out hover:bg-green-600"
+          disabled={isCertificateCompleted}
+          onClick={handleSubmit}
         >
           Submit
         </button>
