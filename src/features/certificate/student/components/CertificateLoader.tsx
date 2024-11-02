@@ -1,36 +1,34 @@
 'use client';
 
+import Loading from '@/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   certificateList,
+  certificateModuleCompleted,
   certificateRemove,
 } from '@/redux/reducers/certificateReducer';
 import { EMPTY_STRING } from '@/utils/constants';
+import { useEffect, useState } from 'react';
 
 /** Loads the certificates uploaded by the student from the database. */
 const CertificateLoader = () => {
-  const _certificateList = certificateList(
-    useAppSelector((s) => s.certificate)
-  );
+  const [isCertificateLoaded, setCertificateState] = useState(false);
+  const selector = useAppSelector((s) => s.certificate);
+  const _certificateList = certificateList(selector);
+  const isCertificateCompleted = certificateModuleCompleted(selector);
   const dispatch = useAppDispatch();
   const invalidExtraCharactersRegex = /(%\d{1}\D{1})/g;
 
   function handleRemoveCertificate(
     certificate: (typeof _certificateList)[number]
   ) {
-    // const encodedCertificate = encodeURIComponent(certificate).replace(
-    //   invalidExtraCharactersRegex,
-    //   EMPTY_STRING
-    // );
-    // const tableRow = document.querySelector(
-    //   `tr#${encodedCertificate}`
-    // ) as HTMLTableRowElement;
-    // const toggleClasses = ['hidden'] as const;
-
-    // tableRow.classList.toggle(...toggleClasses);
-    console.log(certificate);
+    if (isCertificateCompleted) return alert('You cannot do that now.');
     dispatch(certificateRemove(certificate));
   }
+
+  useEffect(() => setCertificateState(true), []);
+
+  if (!isCertificateLoaded) return <Loading />;
 
   return (
     <>
@@ -66,9 +64,12 @@ const CertificateLoader = () => {
                         </p>
                       </td>
                       <td>
-                        <div className="flex justify-center gap-2">
+                        <div
+                          className={`${isCertificateCompleted ? 'opacity-0' : 'flex'} justify-center gap-2`}
+                        >
                           <button
                             className="h-12 w-24 rounded-lg bg-red-500 px-2 py-1 text-center text-white shadow-sm"
+                            disabled={isCertificateCompleted}
                             onClick={() => handleRemoveCertificate(certificate)}
                           >
                             Remove
