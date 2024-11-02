@@ -1,7 +1,6 @@
 import type FinalComputation from '@/features/certificate/student/utils/types/finalComputation';
 import type { Certificate } from '@/lib/enums/certificate';
 import type { GradeRating } from '@/lib/enums/gradeRating';
-import type { Specialization } from '@/lib/enums/specialization';
 import type { CertificateResult } from '@/utils/types/certificateResult';
 import type PossibleJob from '@/utils/types/possibleJob';
 
@@ -45,9 +44,7 @@ function filterCertificatesByJob(
 export default function certificateResult(
   certificateResult: CertificateResult
 ) {
-  // TODO: useAppSelector(s=>s.studentInfo)
-  const specialization = 'BUSINESS_ANALYTICS' as Specialization;
-  const { certificateList } = certificateResult;
+  const { certificateList, specialization } = certificateResult;
 
   /** Task requirements to be performed to be in the role. */
   const certificateBasedSpecialization = certificateCalculation

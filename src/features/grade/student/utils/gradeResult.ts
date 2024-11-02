@@ -16,6 +16,11 @@ import gradeSystem from './gradeSystem';
 import { GradeRating } from '@/lib/enums/gradeRating';
 import { NUMBER_OF_SEMESTER } from '@/utils/constants';
 
+type GradeResultProps = {
+  grades: GradeInfo[];
+  specialization: Specialization;
+};
+
 type SubjectReference = {
   code: SubjectCodesFor2018CurriculumEnum;
   grade: string;
@@ -131,10 +136,8 @@ function checkSubjects(
   return jobs as RecordJobs;
 }
 
-export default function gradeResult(grades: GradeInfo[]) {
-  // TODO: useAppSelector(s=>s.studentInfo) specialization
-  const specialization = 'BUSINESS_ANALYTICS' as Specialization;
-
+export default function gradeResult(props: GradeResultProps) {
+  const { grades, specialization } = props;
   try {
     if (grades.length === 0) {
       throw new Error('There are no subjects to compute!');

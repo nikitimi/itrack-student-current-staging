@@ -13,7 +13,6 @@ import {
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import fetchHelper from '@/utils/fetch';
-import certificateResult from '../utils/certificateResult';
 
 type InitialState = {
   status: 'empty certificate not triggered' | 'empty certificate triggered';
@@ -44,7 +43,7 @@ const CertificateConfirmation = () => {
       )
         throw new Error("Are you sure you didn't take any certificates?");
 
-      const result: CertificateResult = {
+      const result: Pick<CertificateResult, 'certificateList'> = {
         certificateList: _certificateList,
       };
 
@@ -67,7 +66,6 @@ const CertificateConfirmation = () => {
       }
 
       // TODO: Make UI to present this.
-      console.log(certificateResult(result));
       console.log(responseBody);
       dispatch(certificateModuleStateUpdate(true));
     } catch (e) {

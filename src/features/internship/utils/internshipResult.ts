@@ -27,6 +27,11 @@ type RecordOfTasksWithGrades = Record<
   (Pick<InternshipCalculation, 'job'> | 1 | 2 | 3 | 4 | 5)[]
 >;
 
+type InternshipResultProps = {
+  internshipResult: Omit<InternshipResult, 'status'>;
+  specialization: Specialization;
+};
+
 function mapGradeAndTaskOnly(calculations: InternshipCalculation[]) {
   let tasks = {};
   calculations.forEach((i) => {
@@ -43,11 +48,8 @@ function filteredInternshipCalculation(specialization: Specialization) {
 }
 
 // This will return the calculation for the internship result.
-export default function internshipResult(
-  internshipResult: Omit<InternshipResult, 'status'>
-) {
-  /** TODO: Call here useAppSelector(s=>s.studentInfo.studentInfoSpecialization). */
-  const specialization = 'WEB_AND_MOBILE_DEVELOPMENT' as Specialization;
+export default function internshipResult(props: InternshipResultProps) {
+  const { internshipResult, specialization } = props;
   const isITCompanyGrade = internshipResult.isITCompany ? 100 : 50;
 
   let jobs: PossibleJob[] = [];

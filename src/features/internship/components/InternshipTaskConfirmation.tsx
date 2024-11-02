@@ -8,7 +8,6 @@ import {
   internshipSetCompletion,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
-import internshipResult from '@/features/internship/utils/internshipResult';
 import type { InternshipResult } from '@/utils/types/internshipResult';
 import { useState } from 'react';
 import fetchHelper from '@/utils/fetch';
@@ -67,9 +66,6 @@ const InternshipTaskConfirmation = () => {
           (await response.json()) as BaseAPIResponse<string>;
         throw new Error(errorMessage[0]);
       }
-      // TODO: Make UI to show Result.
-      console.log(internshipResult(result));
-
       dispatch(internshipSetCompletion(true));
     } catch (e) {
       const error = e as Error;

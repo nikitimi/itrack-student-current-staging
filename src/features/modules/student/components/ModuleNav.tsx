@@ -1,24 +1,67 @@
-import Link from 'next/link';
-import { headers } from 'next/headers';
-import React from 'react';
+'use client';
 
-import studentRoutesEnum from '@/lib/enums/routes/studentRoutes';
+import Link from 'next/link';
+import { useEffect } from 'react';
+
+import studentRoutesEnum, {
+  type StudentRoute,
+} from '@/lib/enums/routes/studentRoutes';
 import { EMPTY_STRING, WRONG_NUMBER } from '@/utils/constants';
+import { usePathname } from 'next/navigation';
+import useAppRouter from '@/hooks/useAppRouter';
+import useModuleInputController from '@/hooks/useModuleInputController';
 
 const studentRoutes = studentRoutesEnum.options;
 
 const ModuleNav = () => {
+  const pathname = usePathname() as StudentRoute;
   const routeDivider = '/';
-  const headerList = headers();
+  const router = useAppRouter();
   const moduleRoutes = studentRoutes.filter(
     (route) => route.includes('modules') && route.split(routeDivider).length > 3
   );
-  const fullPath = headerList.get('x-pathname');
+  const {
+    isCertificateModuleCompleted,
+    isGradesModuleCompleted,
+    isInternshipModuleCompleted,
+  } = useModuleInputController();
+
   const lastIndexOfRouteDivider =
-    fullPath?.lastIndexOf(routeDivider) ?? WRONG_NUMBER;
-  const pathName =
-    fullPath?.substring(lastIndexOfRouteDivider + 1, fullPath.length) ??
+    pathname?.lastIndexOf(routeDivider) ?? WRONG_NUMBER;
+  const finalPathname =
+    pathname?.substring(lastIndexOfRouteDivider + 1, pathname.length) ??
     EMPTY_STRING;
+
+  useEffect(() => {
+    function redirectToModuleHome() {
+      const prompt =
+        "Already done with this module, redirecting you to the module's home.";
+
+      switch (true) {
+        case pathname === '/student/modules/certificate' &&
+          isCertificateModuleCompleted:
+          router.push('/student/modules');
+          alert(prompt);
+          break;
+        case pathname === '/student/modules/grade' && isGradesModuleCompleted:
+          router.push('/student/modules');
+          alert(prompt);
+          break;
+        case pathname === '/student/modules/internship' &&
+          isInternshipModuleCompleted:
+          router.push('/student/modules');
+          alert(prompt);
+          break;
+      }
+    }
+    return redirectToModuleHome();
+  }, [
+    router,
+    pathname,
+    isCertificateModuleCompleted,
+    isGradesModuleCompleted,
+    isInternshipModuleCompleted,
+  ]);
 
   return (
     <div className="bg-violet-200 p-2">
@@ -26,8 +69,21 @@ const ModuleNav = () => {
       <section className="flex justify-between">
         {moduleRoutes.map((route) => {
           const name = route.split('/')[3];
+          let isButtonDisabled = true;
 
-          const isActiveRoute = name.includes(pathName);
+          const isActiveRoute = name.includes(finalPathname);
+
+          switch (route) {
+            case '/student/modules/certificate':
+              isButtonDisabled = isCertificateModuleCompleted;
+              break;
+            case '/student/modules/grade':
+              isButtonDisabled = isGradesModuleCompleted;
+              break;
+            case '/student/modules/internship':
+              isButtonDisabled = isInternshipModuleCompleted;
+              break;
+          }
 
           const defaultClasses = [
             'rounded-lg',
@@ -51,7 +107,7 @@ const ModuleNav = () => {
           return (
             <Link key={route} href={route}>
               <button
-                disabled={isActiveRoute}
+                disabled={isActiveRoute || isButtonDisabled}
                 className={[
                   ...(isActiveRoute
                     ? activeClasses
