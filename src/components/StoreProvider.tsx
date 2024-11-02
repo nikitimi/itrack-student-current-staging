@@ -11,14 +11,14 @@ import type GradeInfo from '@/utils/types/gradeInfo';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useAppDispatch } from '@/hooks/redux';
 import {
   authenticationSetUserID,
   authenticationSetUserType,
 } from '@/redux/reducers/authenticationReducer';
 import { certificateModuleStateUpdate } from '@/redux/reducers/certificateReducer';
 import { certificateAdd } from '@/redux/reducers/certificateReducer';
-import { grades, gradesAdd } from '@/redux/reducers/gradeReducer';
+import { gradesAdd } from '@/redux/reducers/gradeReducer';
 import store from '@/redux/store';
 import {
   studentInfoSetNumber,
@@ -51,7 +51,6 @@ export default function StoreProvider({
 const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
   const { role, specialization, studentType, studentNumber, userId } = rest;
   const dispatch = useAppDispatch();
-  const _grades = grades(useAppSelector((s) => s.grade));
 
   // This will control the state of the app whether the students can input in the forms.
   useEffect(() => {
@@ -61,11 +60,11 @@ const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
         dispatch(certificateAdd(certificate))
       );
     }
-  }, [rest.certificate, _grades, dispatch]);
+  }, [rest.certificate, dispatch]);
+
   useEffect(
     () => rest.grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo))),
-
-    [rest.grades, _grades, dispatch]
+    [rest.grades, dispatch]
   );
 
   useEffect(() => {
