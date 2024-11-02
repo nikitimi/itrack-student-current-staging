@@ -13,7 +13,6 @@ import internshipResult from '@/features/internship/utils/internshipResult';
 import PossibleJob from '@/utils/types/possibleJob';
 
 const useRevealAllModulesResult = () => {
-  const JOB_LENGTH = 5;
   const specialization = studentInfoSpecialization(
     useAppSelector((s) => s.studentInfo)
   );
@@ -69,28 +68,31 @@ const useRevealAllModulesResult = () => {
     CLOUD_SERVICE_DELIVERY_MANAGER: 0,
   };
   function calculateRecord(record: [string, number][]) {
-    record.forEach(([job], index) => {
-      jobHolder = {
-        ...jobHolder,
-        [job as PossibleJob]:
-          jobHolder[job as PossibleJob] + (JOB_LENGTH - index),
-      };
-    });
+    record
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([job], index) => {
+        jobHolder = {
+          ...jobHolder,
+          [job as PossibleJob]:
+            jobHolder[job as PossibleJob] + (record.length - index),
+        };
+      });
   }
 
   calculateRecord(props.certificate);
   calculateRecord(props.grades ?? []);
   calculateRecord(props.internship);
 
-  const filteredJobHolder = Object.entries(jobHolder).reduce(
-    (acc, [key, value]) => {
-      if (value !== 0) {
+  const filteredJobHolder = Object.entries(jobHolder)
+    .filter(([, value]) => value !== 0)
+    .sort((a, b) => b[1] - a[1])
+    .reduce(
+      (acc, [key, value]) => {
         acc[key as PossibleJob] = value;
-      }
-      return acc;
-    },
-    {} as Record<PossibleJob, number>
-  );
+        return acc;
+      },
+      {} as Record<PossibleJob, number>
+    );
   return { ...props, jobHolder: filteredJobHolder };
 };
 

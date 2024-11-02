@@ -18,13 +18,14 @@ const Profile = () => {
 
   function handleSignout() {
     // TODO: Disable all buttons while signing out.
-    clerk.signOut();
-    dispatch(authenticationResetState());
-    dispatch(certificateResetState());
-    dispatch(gradeResetState());
-    dispatch(internshipResetState());
-    dispatch(studentInfoResetState());
-    router.replace('/student/signin');
+    clerk.signOut().finally(() => {
+      dispatch(authenticationResetState());
+      dispatch(certificateResetState());
+      dispatch(gradeResetState());
+      dispatch(internshipResetState());
+      dispatch(studentInfoResetState());
+      router.replace('/student/signin');
+    });
   }
 
   return (

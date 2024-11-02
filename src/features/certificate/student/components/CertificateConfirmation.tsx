@@ -65,8 +65,6 @@ const CertificateConfirmation = () => {
         );
       }
 
-      // TODO: Make UI to present this.
-      console.log(responseBody);
       dispatch(certificateModuleStateUpdate(true));
     } catch (e) {
       setState((prevState) => ({

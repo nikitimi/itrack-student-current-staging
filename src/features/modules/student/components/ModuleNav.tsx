@@ -85,6 +85,7 @@ const ModuleNav = () => {
               break;
           }
 
+          const isRouteDisabled = isActiveRoute || isButtonDisabled;
           const defaultClasses = [
             'rounded-lg',
             'border',
@@ -107,7 +108,7 @@ const ModuleNav = () => {
           return (
             <Link key={route} href={route}>
               <button
-                disabled={isActiveRoute || isButtonDisabled}
+                disabled={isRouteDisabled}
                 className={[
                   ...(isActiveRoute
                     ? activeClasses

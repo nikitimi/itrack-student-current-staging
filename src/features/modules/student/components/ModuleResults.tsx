@@ -89,14 +89,21 @@ const ModuleResults = () => {
         </section>
       </div>
       <div className="grid grid-cols-1">
-        {Object.entries(jobHolder).map(([key, number]) => {
-          return (
-            <div key={key} className="flex justify-between px-4">
-              <p>{key}</p>
-              <p>{number}</p>
-            </div>
-          );
-        })}
+        {Object.entries(jobHolder)
+          .splice(0, 3)
+          .map(([key, number]) => {
+            return (
+              <div
+                key={key}
+                className="flex justify-between bg-blue-600 px-4 text-sm"
+              >
+                <p className="capitalize">
+                  {key.replace(/_/g, ' ').toLocaleLowerCase()}
+                </p>
+                <p>{number}</p>
+              </div>
+            );
+          })}
       </div>
     </>
   );

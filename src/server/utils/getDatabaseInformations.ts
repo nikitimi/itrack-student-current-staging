@@ -27,7 +27,7 @@ async function getDatabaseInformations(studentNumber: string) {
   try {
     const apiRoutes: APIRoutes[] = [
       '/api/mongo/grades',
-      // '/api/mongo/certificate',
+      '/api/mongo/certificate',
       '/api/mongo/internship',
     ] as const;
 
