@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { InternshipTask } from '@/lib/enums/internshipTask';
 import internshipTaskEnum from '@/lib/enums/internshipTask';
 import {
+  internshipModuleCompleted,
   internshipTaskAdd,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
@@ -15,6 +16,8 @@ const InternshipTaskSelector = () => {
   const dispatch = useAppDispatch();
   const selector = useAppSelector((s) => s.internship);
   const _internshipTasks = internshipTasks(selector);
+  const _internshipModuleCompleted = internshipModuleCompleted(selector);
+  const isInternshipModuleCompleted = _internshipModuleCompleted === true;
 
   function handleTaskAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,6 +51,7 @@ const InternshipTaskSelector = () => {
                   <select
                     name="selectedTask"
                     ref={selectRef}
+                    disabled={isInternshipModuleCompleted}
                     className="h-12 rounded-lg bg-background p-2 text-foreground shadow-sm"
                   >
                     {internshipTaskEnum.options
@@ -63,6 +67,7 @@ const InternshipTaskSelector = () => {
                   </select>
                   <button
                     type="submit"
+                    disabled={isInternshipModuleCompleted}
                     className="rounded-lg bg-green-300 px-2 py-1 text-background shadow-sm"
                   >
                     Add Task

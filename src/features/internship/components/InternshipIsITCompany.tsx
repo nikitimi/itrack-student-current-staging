@@ -1,13 +1,20 @@
 'use client';
 
-import { useAppDispatch } from '@/hooks/redux';
-import { internshipCompanyQuestionUpdate } from '@/redux/reducers/internshipReducer';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import {
+  internshipCompanyQuestionUpdate,
+  internshipModuleCompleted,
+} from '@/redux/reducers/internshipReducer';
 import React from 'react';
 
 const InternshipIsITCompany = () => {
   const dispatch = useAppDispatch();
   const yesOrNo = ['yes', 'no'] as const;
   const baseButtonClasses = 'h-12 rounded-lg  px-2 py-1 shadow-sm';
+  const _internshipModuleCompleted = internshipModuleCompleted(
+    useAppSelector((s) => s.internship)
+  );
+  const isInternshipModuleCompleted = _internshipModuleCompleted === true;
 
   function dynamicClasses(bool: boolean) {
     return bool ? 'bg-green-400' : 'bg-red-400';
@@ -29,6 +36,7 @@ const InternshipIsITCompany = () => {
             <button
               key={yesNo}
               type="button"
+              disabled={isInternshipModuleCompleted}
               className={`${dynamicClasses(isYes)} ${baseButtonClasses}`}
               onClick={() => setIsITState(yesNo)}
             >
