@@ -43,7 +43,9 @@ function filteredInternshipCalculation(specialization: Specialization) {
 }
 
 // This will return the calculation for the internship result.
-export default function internshipResult(internshipResult: InternshipResult) {
+export default function internshipResult(
+  internshipResult: Omit<InternshipResult, 'status'>
+) {
   /** TODO: Call here useAppSelector(s=>s.studentInfo.studentInfoSpecialization). */
   const specialization = 'WEB_AND_MOBILE_DEVELOPMENT' as Specialization;
   const isITCompanyGrade = internshipResult.isITCompany ? 100 : 50;

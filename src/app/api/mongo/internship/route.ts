@@ -8,6 +8,8 @@ import { collection } from '@/server/utils/mongodb';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { EMPTY_STRING, WRONG_NUMBER } from '@/utils/constants';
 
+type InternshipData = Omit<InternshipResult, 'status'>;
+
 const internshipCollection = collection('Internship');
 
 export async function POST(request: NextRequest) {
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest) {
     errorMessage: [],
   };
   try {
-    const internship = (await request.json()) as InternshipResult &
+    const internship = (await request.json()) as InternshipData &
       Pick<MongoExtra, 'studentNumber'>;
     const date = new Date();
     const gradeInsertion = await internshipCollection.insertOne({
@@ -39,14 +41,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const response: BaseAPIResponse<InternshipResult & MongoExtra> = {
+  const response: BaseAPIResponse<InternshipData & MongoExtra> = {
     data: {
       _id: EMPTY_STRING,
       tasks: [],
       isITCompany: false,
       grade: 0,
       studentNumber: EMPTY_STRING,
-      status: 'reconfigure',
       dateCreated: WRONG_NUMBER,
       dateModified: WRONG_NUMBER,
     },

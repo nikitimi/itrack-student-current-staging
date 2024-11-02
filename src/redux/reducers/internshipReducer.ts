@@ -44,7 +44,9 @@ const internshipSlice = createSlice({
       state,
       action: { payload: (typeof initialState)['internshipTasks'][number] }
     ) {
-      state.internshipTasks.push(action.payload);
+      if (!state.internshipTasks.includes(action.payload)) {
+        state.internshipTasks.push(action.payload);
+      }
     },
     internshipSetCompletion(
       state,

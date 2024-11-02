@@ -26,6 +26,13 @@ import {
   studentInfoSetType,
 } from '@/redux/reducers/studentInfoReducer';
 import { EMPTY_STRING } from '@/utils/constants';
+import { InternshipResult } from '@/utils/types/internshipResult';
+import {
+  internshipCompanyQuestionUpdate,
+  internshipGradeUpdate,
+  internshipSetCompletion,
+  internshipTaskAdd,
+} from '@/redux/reducers/internshipReducer';
 
 type StoreProviderParams = {
   userId: string | null;
@@ -35,6 +42,7 @@ type StoreProviderParams = {
   role: UserRole;
   grades: (GradeInfo & MongoExtra)[];
   certificate: Certificate[];
+  internship?: Omit<InternshipResult, 'status'> & MongoExtra;
 } & Children;
 
 export default function StoreProvider({
@@ -66,6 +74,17 @@ const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
     () => rest.grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo))),
     [rest.grades, dispatch]
   );
+  useEffect(() => {
+    if (rest.internship !== undefined) {
+      const { isITCompany, grade, tasks } = rest.internship;
+      dispatch(internshipCompanyQuestionUpdate(isITCompany));
+      dispatch(internshipGradeUpdate(grade));
+      tasks.forEach((task) => {
+        dispatch(internshipTaskAdd(task));
+      });
+      dispatch(internshipSetCompletion(true));
+    }
+  }, [rest.internship, dispatch]);
 
   useEffect(() => {
     dispatch(studentInfoSetSpecialization(specialization));
