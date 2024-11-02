@@ -63,6 +63,7 @@ const internshipSlice = createSlice({
       state.internshipCompanyQuestion = initialState.internshipCompanyQuestion;
       state.internshipGrade = initialState.internshipGrade;
       state.internshipTasks = initialState.internshipTasks;
+      state.internshipModuleCompleted = initialState.internshipModuleCompleted;
     },
   },
 });
@@ -85,5 +86,6 @@ export const {
   internshipGradeUpdate,
   internshipTaskAdd,
   internshipTaskRemove,
+  internshipResetState,
 } = internshipSlice.actions;
 export default internshipSlice.reducer;

@@ -54,7 +54,7 @@ export default async function RootLayout({ children }: Children) {
     studentType,
     studentNumber,
     userId,
-    grades: result,
+    ...result,
   };
 
   return (

@@ -1,13 +1,15 @@
 'use client';
 
+import { useClerk } from '@clerk/nextjs';
+
 import Heading from '@/components/Heading';
 import { useAppDispatch } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
-import {
-  authenticationSetStatus,
-  authenticationSetUserType,
-} from '@/redux/reducers/authenticationReducer';
-import { useClerk } from '@clerk/nextjs';
+import { authenticationResetState } from '@/redux/reducers/authenticationReducer';
+import { certificateResetState } from '@/redux/reducers/certificateReducer';
+import { gradeResetState } from '@/redux/reducers/gradeReducer';
+import { internshipResetState } from '@/redux/reducers/internshipReducer';
+import { studentInfoResetState } from '@/redux/reducers/studentInfoReducer';
 
 const Profile = () => {
   const clerk = useClerk();
@@ -17,8 +19,11 @@ const Profile = () => {
   function handleSignout() {
     // TODO: Disable all buttons while signing out.
     clerk.signOut();
-    dispatch(authenticationSetStatus('no user'));
-    dispatch(authenticationSetUserType('anonymous'));
+    dispatch(authenticationResetState());
+    dispatch(certificateResetState());
+    dispatch(gradeResetState());
+    dispatch(internshipResetState());
+    dispatch(studentInfoResetState());
     router.replace('/student/signin');
   }
 
