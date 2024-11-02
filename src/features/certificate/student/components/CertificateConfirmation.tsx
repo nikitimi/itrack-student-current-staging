@@ -4,13 +4,16 @@ import type { CertificateResult } from '@/utils/types/certificateResult';
 
 import { useState } from 'react';
 
-import { useAppSelector } from '@/hooks/redux';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   certificateList,
   certificateModuleCompleted,
+  certificateModuleStateUpdate,
 } from '@/redux/reducers/certificateReducer';
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
+import fetchHelper from '@/utils/fetch';
+import certificateResult from '../utils/certificateResult';
 
 type InitialState = {
   status: 'empty certificate not triggered' | 'empty certificate triggered';
@@ -26,6 +29,7 @@ const CertificateConfirmation = () => {
   const _certificateList = certificateList(selector);
   const isCertificateCompleted = certificateModuleCompleted(selector);
 
+  const dispatch = useAppDispatch();
   const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
   const isCertificateListEmpty = _certificateList.length === 0;
 
@@ -45,13 +49,14 @@ const CertificateConfirmation = () => {
       };
 
       // Posting to database.
-      const postingCertificate = await fetch('/api/mongo/certificate', {
-        method: 'POST',
-        body: JSON.stringify({
+      const postingCertificate = await fetchHelper(
+        '/api/mongo/certificate',
+        'POST',
+        {
           ...result,
           studentNumber,
-        }),
-      });
+        }
+      );
 
       const responseBody = await postingCertificate.json();
 
@@ -60,10 +65,11 @@ const CertificateConfirmation = () => {
           (responseBody as BaseAPIResponse<string>).errorMessage[0]
         );
       }
-      console.log(responseBody);
 
       // TODO: Make UI to present this.
-      // console.log(certificateResult(result));
+      console.log(certificateResult(result));
+      console.log(responseBody);
+      dispatch(certificateModuleStateUpdate(true));
     } catch (e) {
       setState((prevState) => ({
         ...prevState,
