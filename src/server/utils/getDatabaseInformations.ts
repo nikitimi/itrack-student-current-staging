@@ -14,17 +14,16 @@ type GetDatabaseInformation = {
   certificate: Certificate[];
 };
 
-async function getDatabaseInformations(
-  studentNumber: string
-): Promise<GetDatabaseInformation> {
+async function getDatabaseInformations(studentNumber: string) {
+  let grades: GetDatabaseInformation['grades'] = [];
+  let certificate: GetDatabaseInformation['certificate'] = [];
+
   try {
     const apiRoutes: APIRoutes[] = [
       '/api/mongo/grades',
       '/api/mongo/certificate',
       // '/api/mongo/internship'
     ] as const;
-    let grades: GetDatabaseInformation['grades'] = [];
-    let certificate: GetDatabaseInformation['certificate'] = [];
 
     for (const api of apiRoutes) {
       const response = await fetchHelper(api, 'GET', {
@@ -55,8 +54,8 @@ async function getDatabaseInformations(
     };
   } catch (e) {
     const error = e as Error;
-    console.log(error.message);
-    return { certificate: [], grades: [] };
+    console.log({ 'Catched Error': error.message });
+    return { certificate, grades };
   }
 }
 export default getDatabaseInformations;
