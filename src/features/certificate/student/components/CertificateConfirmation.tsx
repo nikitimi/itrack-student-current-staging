@@ -2,11 +2,19 @@
 
 import type { CertificateResult } from '@/utils/types/certificateResult';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { useAppSelector } from '@/hooks/redux';
-import { certificateList } from '@/redux/reducers/certificateReducer';
-import certificateResult from '@/features/certificate/student/utils/certificateResult';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import {
+  certificateList,
+  certificateModuleCompleted,
+  certificateModuleStateUpdate,
+} from '@/redux/reducers/certificateReducer';
+import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
+import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
+import fetchHelper from '@/utils/fetch';
+import { CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type InitialState = {
   status: 'empty certificate not triggered' | 'empty certificate triggered';
@@ -18,24 +26,48 @@ const initialState: InitialState = {
 
 const CertificateConfirmation = () => {
   const [state, setState] = useState(initialState);
-  const _certificateList = certificateList(
-    useAppSelector((s) => s.certificate)
-  );
+  const selector = useAppSelector((s) => s.certificate);
+  const _certificateList = certificateList(selector);
+  const isCertificateCompleted = certificateModuleCompleted(selector);
+
+  const dispatch = useAppDispatch();
+  const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
   const isCertificateListEmpty = _certificateList.length === 0;
-  function handleSubmit() {
+
+  async function handleSubmit() {
     try {
+      if (isCertificateCompleted)
+        throw new Error("You've already uploaded your certificates.");
+
       if (
         isCertificateListEmpty &&
         state.status === 'empty certificate not triggered'
       )
         throw new Error("Are you sure you didn't take any certificates?");
 
-      //TODO: Save to database
-      const result: CertificateResult = {
+      const result: Pick<CertificateResult, 'certificateList'> = {
         certificateList: _certificateList,
       };
 
-      console.log(certificateResult(result));
+      // Posting to database.
+      const postingCertificate = await fetchHelper(
+        '/api/mongo/certificate',
+        'POST',
+        {
+          ...result,
+          studentNumber,
+        }
+      );
+
+      const responseBody = await postingCertificate.json();
+
+      if (!postingCertificate.ok) {
+        throw new Error(
+          (responseBody as BaseAPIResponse<string>).errorMessage[0]
+        );
+      }
+
+      dispatch(certificateModuleStateUpdate(true));
     } catch (e) {
       setState((prevState) => ({
         ...prevState,
@@ -46,16 +78,11 @@ const CertificateConfirmation = () => {
     }
   }
   return (
-    <div className="w-full bg-violet-500 p-2">
-      <div className="grid">
-        <button
-          onClick={handleSubmit}
-          className="h-12 rounded-lg bg-background px-2 py-1 text-foreground shadow-sm duration-300 ease-in-out hover:bg-green-600"
-        >
-          Submit
-        </button>
-      </div>
-    </div>
+    <CardFooter className="grid">
+      <Button onClick={handleSubmit} disabled={isCertificateCompleted}>
+        Submit
+      </Button>
+    </CardFooter>
   );
 };
 

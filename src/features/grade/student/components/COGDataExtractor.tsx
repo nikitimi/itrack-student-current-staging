@@ -10,7 +10,7 @@ import subjectsHelper from '@/features/grade/student/utils/subjectsHelper';
 import subjectsIndexIdentifier from '@/utils/subjectsIndexIdentifier';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { grades, gradesAdd } from '@/redux/reducers/gradeReducer';
-import { WRONG_NUMBER } from '@/utils/constants';
+import { NUMBER_OF_SEMESTER, WRONG_NUMBER } from '@/utils/constants';
 import regex from '@/utils/regex';
 import {
   studentInfoNumber,
@@ -18,6 +18,18 @@ import {
 } from '@/redux/reducers/studentInfoReducer';
 import { Specialization } from '@/lib/enums/specialization';
 import { ExtractedCOGDataResponse } from '@/server/lib/schema/extractedCOGData';
+import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
+import { useEffect, useState } from 'react';
+import fetchHelper from '@/utils/fetch';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 
 type ExtraProps = {
   yearLevelIndex: number;
@@ -34,6 +46,7 @@ const COGDataExtractor = () => {
     .map((s) => s[1]);
   const dispatch = useAppDispatch();
   const _grades = grades(useAppSelector((s) => s.grade));
+  const [isInputDisabled, setInputAvailability] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,11 +56,15 @@ const COGDataExtractor = () => {
     };
 
     try {
-      const formData = new FormData(event.currentTarget);
-      const response = await fetch('/api/extractPDFData', {
-        method: 'POST',
-        body: formData,
-      });
+      const formdata = new FormData(event.currentTarget);
+      const response = await fetchHelper(
+        '/api/extractPDFData',
+        'POST',
+        {
+          studentNumber: undefined,
+        },
+        formdata
+      );
 
       if (!response.ok) {
         throw new Error('File upload failed');
@@ -109,7 +126,6 @@ const COGDataExtractor = () => {
                 grade,
                 code: codes[i],
               }));
-              const date = new Date();
               const { yearLevelIndex, ...rest } = {
                 ...resultHolder,
                 subjects,
@@ -122,21 +138,24 @@ const COGDataExtractor = () => {
                     g.semester === rest.semester
                 ).length === 1;
 
-              const STUDENT_NUMBER_TEST = '2021201282';
-              // TODO: Put here the studentInfoNumber.
-              if (rest.studentNumber !== STUDENT_NUMBER_TEST)
+              if (rest.studentNumber !== studentNumber)
                 throw new Error('The uploaded file is not your COG!');
 
               if (isGradeExistInRecord)
                 throw new Error("You've already uploaded this COG!");
 
-              console.log('removing ', yearLevelIndex);
-              // TODO: Send to Database, maybe with Redux Saga?
-              console.log({
-                ...rest,
-                dateCreated: date.getTime(),
-                dateModified: -1,
-              });
+              console.log('removing year level index: ', yearLevelIndex);
+
+              const response = await fetchHelper(
+                '/api/mongo/grades',
+                'POST',
+                rest
+              );
+              console.log(response);
+              const result = (await response.json()) as BaseAPIResponse<
+                string[]
+              >;
+              if (!response.ok) throw new Error(result.errorMessage.toString());
               dispatch(gradesAdd(rest));
             }
             break;
@@ -149,11 +168,29 @@ const COGDataExtractor = () => {
     }
   }
 
+  useEffect(
+    () => setInputAvailability(_grades.length === NUMBER_OF_SEMESTER),
+    [_grades.length]
+  );
+
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <input name="file" type="file" required />
-        <button>Reveal</button>
+        <Card className="mt-12 rounded-none border-none shadow-none">
+          <CardHeader>
+            <CardTitle>COG Extractor</CardTitle>
+            <CardDescription>Upload your COG here</CardDescription>
+          </CardHeader>
+          <CardContent className="flex">
+            <Input
+              name="file"
+              type="file"
+              required
+              disabled={isInputDisabled}
+            />
+            <Button disabled={isInputDisabled}>Upload COG</Button>
+          </CardContent>
+        </Card>
       </form>
     </>
   );

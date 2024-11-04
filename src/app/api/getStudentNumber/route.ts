@@ -2,6 +2,7 @@ import type { Specialization } from '@/lib/enums/specialization';
 import type { StudentType } from '@/lib/enums/studentType';
 import type { UserRole } from '@/lib/enums/userRole';
 import type { GetStudentNumberResponse } from '@/server/lib/schema/apiResponse/getStudentNumber';
+import StudentCreation from '@/utils/types/studentCreation';
 
 import { clerkClient } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
@@ -12,7 +13,7 @@ type UserMetadata = {
   studentNumber: string;
   studentType: StudentType;
   specialization: Specialization;
-};
+} & Pick<StudentCreation, 'firstName' | 'lastName'>;
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,12 +50,23 @@ export async function GET(request: NextRequest) {
     const studentNumber = userMetadata['studentNumber'];
     const studentType = userMetadata['studentType'];
     const specialization = userMetadata['specialization'];
+    const firstName = userMetadata['firstName'];
+    const lastName = userMetadata['lastName'];
 
     // One student.
     if (role === 'student') {
       response = {
         ...response,
-        data: [role, specialization, studentNumber, studentType],
+        data: [
+          {
+            role,
+            specialization,
+            studentNumber,
+            studentType,
+            firstName,
+            lastName,
+          },
+        ],
       };
       return NextResponse.json(response);
     }
@@ -66,11 +78,11 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(response);
-  } catch (err) {
-    console.log(err);
+  } catch (e) {
+    const error = e as Error;
     const errorResponse: GetStudentNumberResponse = {
       data: [],
-      errorMessage: ['Server error in clerk client.'],
+      errorMessage: [error.message],
     };
     return NextResponse.json(errorResponse, { status: 500 });
   }

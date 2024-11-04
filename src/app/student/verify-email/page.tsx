@@ -2,7 +2,7 @@
 
 import { type FormEvent } from 'react';
 
-import Input from '@/components/Input';
+import { Input } from '@/components/ui/input';
 import { useSignUp } from '@clerk/nextjs';
 import {
   authenticationSetStatus,
@@ -11,11 +11,16 @@ import {
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
 import {
+  studentTemporaryFirstname,
+  studentTemporaryLastname,
   studentTemporaryNumber,
   studentTemporaryResetState,
   studentTemporarySpecialization,
 } from '@/redux/reducers/studentTemporaryReducer';
 import type StudentCreation from '@/utils/types/studentCreation';
+import { Card, CardContent } from '@/components/ui/card';
+import handleInputChange from '@/utils/handleInputChange';
+import { Button } from '@/components/ui/button';
 
 const VerifyEmail = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -23,6 +28,8 @@ const VerifyEmail = () => {
   const dispatch = useAppDispatch();
   const studentInfoSelector = useAppSelector((s) => s.studentTemporary);
   const _studentInfoNumber = studentTemporaryNumber(studentInfoSelector);
+  const firstName = studentTemporaryFirstname(studentInfoSelector);
+  const lastName = studentTemporaryLastname(studentInfoSelector);
   const _studentInfoSpecialization =
     studentTemporarySpecialization(studentInfoSelector);
   const _authenticationStatus = authenticationStatus(
@@ -50,6 +57,8 @@ const VerifyEmail = () => {
 
       const studentData: StudentCreation = {
         role: 'student',
+        lastName,
+        firstName,
         userId: result.createdUserId,
         studentNumber: _studentInfoNumber.toLocaleString(),
         specialization: _studentInfoSpecialization,
@@ -62,10 +71,10 @@ const VerifyEmail = () => {
       if (!response.ok) {
         throw new Error('Error in assigning role to the student.');
       }
-
-      dispatch(studentTemporaryResetState());
-      dispatch(authenticationSetStatus('authenticated'));
-      setActive({ session: result.createdSessionId });
+      setActive({ session: result.createdSessionId }).finally(() => {
+        dispatch(studentTemporaryResetState());
+        dispatch(authenticationSetStatus('authenticated'));
+      });
     } catch (err) {
       console.log(err);
       alert('Error in processing verification code.');
@@ -73,27 +82,27 @@ const VerifyEmail = () => {
   }
 
   return (
-    <div>
-      <form
-        onSubmit={handleVerificationCode}
-        // className={`${isVerificationModalVisible ? 'opacity-100' : 'opacity-0'} duration-300 ease-in-out`}
-      >
-        <Input
-          name="code"
-          // disabled={!isVerificationModalVisible}
-          regExp={/\d{6}/}
-          placeholder="Verification code xxxxxx"
-          maxLength={6}
-          type="text"
-        />
-        <button
-          // disabled={!isVerificationModalVisible}
-          type="submit"
-          className="h-12 rounded-lg bg-foreground px-2 py-1 text-background shadow-sm duration-300 ease-in-out hover:bg-blue-500 hover:text-foreground"
-        >
-          Submit
-        </button>
-      </form>
+    <div className="itens-center flex h-screen justify-center">
+      <Card className="w-3/4 rounded-none border-none shadow-none">
+        <CardContent>
+          <form onSubmit={handleVerificationCode}>
+            <Input
+              name="code"
+              onChange={(e) => handleInputChange(e, /\d{6}/)}
+              placeholder="Verification code xxxxxx"
+              maxLength={6}
+              type="text"
+            />
+            <Button
+              // disabled={!isVerificationModalVisible}
+              type="submit"
+              className="w-full"
+            >
+              Submit
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -44,7 +44,9 @@ const internshipSlice = createSlice({
       state,
       action: { payload: (typeof initialState)['internshipTasks'][number] }
     ) {
-      state.internshipTasks.push(action.payload);
+      if (!state.internshipTasks.includes(action.payload)) {
+        state.internshipTasks.push(action.payload);
+      }
     },
     internshipSetCompletion(
       state,
@@ -63,6 +65,7 @@ const internshipSlice = createSlice({
       state.internshipCompanyQuestion = initialState.internshipCompanyQuestion;
       state.internshipGrade = initialState.internshipGrade;
       state.internshipTasks = initialState.internshipTasks;
+      state.internshipModuleCompleted = initialState.internshipModuleCompleted;
     },
   },
 });
@@ -85,5 +88,6 @@ export const {
   internshipGradeUpdate,
   internshipTaskAdd,
   internshipTaskRemove,
+  internshipResetState,
 } = internshipSlice.actions;
 export default internshipSlice.reducer;

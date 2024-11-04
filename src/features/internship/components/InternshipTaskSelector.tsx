@@ -1,20 +1,35 @@
 'use client';
 
-import Loading from '@/components/Loading';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/components/ui/select';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import type { InternshipTask } from '@/lib/enums/internshipTask';
 import internshipTaskEnum from '@/lib/enums/internshipTask';
 import {
+  internshipModuleCompleted,
   internshipTaskAdd,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
-import { FormEvent, Suspense, useRef } from 'react';
+import { SelectValue } from '@radix-ui/react-select';
+import { FormEvent } from 'react';
 
 const InternshipTaskSelector = () => {
-  const selectRef = useRef<HTMLSelectElement>(null);
   const dispatch = useAppDispatch();
   const selector = useAppSelector((s) => s.internship);
   const _internshipTasks = internshipTasks(selector);
+  const _internshipModuleCompleted = internshipModuleCompleted(selector);
+  const isInternshipModuleCompleted = _internshipModuleCompleted === true;
 
   function handleTaskAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,45 +50,39 @@ const InternshipTaskSelector = () => {
   }
 
   return (
-    <Suspense fallback={<Loading />}>
-      <div className="w-full bg-violet-300">
-        <div className="flex p-2">
-          <div className="w-full">
-            <div>
-              <form onSubmit={handleTaskAdd}>
-                <h3 className="text-center font-geist-mono text-lg font-medium">
-                  Internship Task Selector
-                </h3>
-                <section className="grid grid-flow-col gap-2 p-2">
-                  <select
-                    name="selectedTask"
-                    ref={selectRef}
-                    className="h-12 rounded-lg bg-background p-2 text-foreground shadow-sm"
-                  >
-                    {internshipTaskEnum.options
-                      .filter((task) => !_internshipTasks.includes(task))
-                      .map((task) => {
-                        const taskName = task.replace(/_/g, ' ');
-                        return (
-                          <option key={task} value={task}>
-                            {taskName}
-                          </option>
-                        );
-                      })}
-                  </select>
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-green-300 px-2 py-1 text-background shadow-sm"
-                  >
-                    Add Task
-                  </button>
-                </section>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Suspense>
+    <Card className="rounded-none border-none bg-transparent shadow-none">
+      <form onSubmit={handleTaskAdd}>
+        <CardHeader>
+          <CardDescription>Internship Task Selector</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-2">
+          <Select name="selectedTask" disabled={isInternshipModuleCompleted}>
+            <SelectTrigger>
+              <SelectValue placeholder="Internship Tasks" />
+            </SelectTrigger>
+            <SelectContent>
+              {internshipTaskEnum.options
+                .filter((task) => !_internshipTasks.includes(task))
+                .map((task) => {
+                  const taskName = task.replace(/_/g, ' ');
+                  return (
+                    <SelectItem key={task} value={task}>
+                      {taskName}
+                    </SelectItem>
+                  );
+                })}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            type="submit"
+            disabled={isInternshipModuleCompleted}
+          >
+            Add Task
+          </Button>
+        </CardContent>
+      </form>
+    </Card>
   );
 };
 

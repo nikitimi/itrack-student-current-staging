@@ -14,6 +14,12 @@ import webAndMobileDevelopmentJobEnum from '@/lib/enums/jobs/webAndMobileDevelop
 import serviceManagementProgramJobEnum from '@/lib/enums/jobs/serviceManagementProgram';
 import gradeSystem from './gradeSystem';
 import { GradeRating } from '@/lib/enums/gradeRating';
+import { NUMBER_OF_SEMESTER } from '@/utils/constants';
+
+type GradeResultProps = {
+  grades: GradeInfo[];
+  specialization: Specialization;
+};
 
 type SubjectReference = {
   code: SubjectCodesFor2018CurriculumEnum;
@@ -130,17 +136,13 @@ function checkSubjects(
   return jobs as RecordJobs;
 }
 
-export default function gradeResult(grades: GradeInfo[]) {
-  // TODO: useAppSelector(s=>s.studentInfo) specialization
-  const specialization = 'BUSINESS_ANALYTICS' as Specialization;
-  const INSUFFICIENT_COG = 6;
-  const numberOfSemesters = 6;
-
+export default function gradeResult(props: GradeResultProps) {
+  const { grades, specialization } = props;
   try {
     if (grades.length === 0) {
       throw new Error('There are no subjects to compute!');
     }
-    if (grades.length < INSUFFICIENT_COG) {
+    if (grades.length < NUMBER_OF_SEMESTER) {
       throw new Error(
         'Insufficient COG!\nPlease upload all COG up to 3rd year 2nd semester.'
       );
@@ -201,7 +203,7 @@ export default function gradeResult(grades: GradeInfo[]) {
         ([key, grade]) =>
           // console.log(key, grade);
           ((finalRecord as RecordJobs)[key as PossibleJob] +=
-            grade / numberOfSemesters)
+            grade / NUMBER_OF_SEMESTER)
       );
     });
 
@@ -212,6 +214,6 @@ export default function gradeResult(grades: GradeInfo[]) {
     return sortedFinalRecord;
   } catch (e) {
     const error = e as Error;
-    alert(error.message);
+    console.log(error.message);
   }
 }

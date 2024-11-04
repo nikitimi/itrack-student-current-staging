@@ -2,7 +2,11 @@
 
 import type { ClerkMiddlewareAuthObject } from '@clerk/nextjs/server';
 
-import type { GetStudentNumberResponse } from '@/server/lib/schema/apiResponse/getStudentNumber';
+import type {
+  GetStudentNumber,
+  GetStudentNumberResponse,
+} from '@/server/lib/schema/apiResponse/getStudentNumber';
+import { EMPTY_STRING } from '@/utils/constants';
 
 export default async function setStudentNumber(
   clerkAuthMiddleware: ClerkMiddlewareAuthObject,
@@ -17,6 +21,17 @@ export default async function setStudentNumber(
     method: 'GET',
   });
   const { data } = (await response.json()) as GetStudentNumberResponse;
-  const [role, specialization, studentNumber, studentType] = data;
-  return { role, specialization, studentNumber, studentType };
+
+  if (data.length > 0 && data[0] === 'string') {
+    return {
+      role: 'student',
+      studentNumber: EMPTY_STRING,
+      studentType: 'irregular',
+      specialization: 'BUSINESS_ANALYTICS',
+      firstName: EMPTY_STRING,
+      lastName: EMPTY_STRING,
+    } as GetStudentNumber;
+  }
+
+  return data[0] as GetStudentNumber;
 }

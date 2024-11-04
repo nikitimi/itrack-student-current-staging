@@ -32,6 +32,12 @@ export default function handleClerkAuthMiddleware(
       case protectedAdminRoutes.includes(pathname):
         console.log('Going to signin admin');
         return NextResponse.redirect(new URL('/admin/signin', request.url));
+      // TODO: Uncomment to restrict API access to not signed in users.
+      // case request.nextUrl.href.includes('api'):
+      //   return NextResponse.json(
+      //     { data: [], errorMessage: 'You are not authorized to send request' },
+      //     { status: 400 }
+      //   );
     }
     return;
   }

@@ -1,7 +1,6 @@
 import type FinalComputation from '@/features/certificate/student/utils/types/finalComputation';
 import type { Certificate } from '@/lib/enums/certificate';
 import type { GradeRating } from '@/lib/enums/gradeRating';
-import type { Specialization } from '@/lib/enums/specialization';
 import type { CertificateResult } from '@/utils/types/certificateResult';
 import type PossibleJob from '@/utils/types/possibleJob';
 
@@ -42,12 +41,8 @@ function filterCertificatesByJob(
   return filteredCertificatesByJob;
 }
 
-export default function certificateResult(
-  certificateResult: CertificateResult
-) {
-  // TODO: useAppSelector(s=>s.studentInfo)
-  const specialization = 'BUSINESS_ANALYTICS' as Specialization;
-  const { certificateList } = certificateResult;
+export default function certificateResult(props: CertificateResult) {
+  const { certificateList, specialization } = props;
 
   /** Task requirements to be performed to be in the role. */
   const certificateBasedSpecialization = certificateCalculation
@@ -99,11 +94,11 @@ export default function certificateResult(
       const certificateBooleans = certificates.map(({ certificate }) =>
         certificateList.includes(certificate)
       );
-      console.log({
-        certificateBooleans,
-        length: certificateBooleans.length,
-        isARating,
-      });
+      // console.log({
+      //   certificateBooleans,
+      //   length: certificateBooleans.length,
+      //   isARating,
+      // });
       /** Number of tooked certificates. */
       const numberOfTrue = certificateBooleans.filter((b) => b === true).length;
       /** Checking of A rating certificates if all are tooked. */
@@ -145,16 +140,16 @@ export default function certificateResult(
   });
 
   // The calculation for A rating certificates are null.
-  certificateByJobArray.forEach((certificateByJob, index) => {
-    const isCertificatesARating = index === 0;
-    if (certificateByJob.filter((r) => r !== undefined).length === 0) {
-      return console.log(
-        isCertificatesARating
-          ? 'No A rating certificate tooked!'
-          : 'No certificates tooked!'
-      );
-    }
-  });
+  // certificateByJobArray.forEach((certificateByJob, index) => {
+  //   const isCertificatesARating = index === 0;
+  //   if (certificateByJob.filter((r) => r !== undefined).length === 0) {
+  //     return console.log(
+  //       isCertificatesARating
+  //         ? 'No A rating certificate tooked!'
+  //         : 'No certificates tooked!'
+  //     );
+  //   }
+  // });
 
   const finalComputation = {};
   Object.values(certificateByJobArray[1]).forEach((c, index) => {

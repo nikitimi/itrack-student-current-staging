@@ -1,12 +1,21 @@
 'use client';
 
-import Input from '@/components/Input';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useAppDispatch } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
 import { authenticationSetStatus } from '@/redux/reducers/authenticationReducer';
 import regExp from '@/utils/regex';
 import { useSignIn } from '@clerk/nextjs';
 import React, { type FormEvent } from 'react';
+import handleInputChange from '@/utils/handleInputChange';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 const Page = () => {
   const { isLoaded, signIn } = useSignIn();
@@ -37,22 +46,32 @@ const Page = () => {
   }
 
   return (
-    <div>
-      <form onSubmit={initiateForgotPassword}>
-        <Input
-          regExp={regExp.email}
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-        />
-        <button
-          type="submit"
-          className="h-12 rounded-lg bg-foreground px-2 py-1 text-background shadow-sm duration-300 ease-in-out hover:bg-blue-500 hover:text-foreground"
-        >
-          Forgot password?
-        </button>
-      </form>
+    <div className="flex h-screen items-center justify-center">
+      <Card className="border-non w-3/4 rounded-none bg-transparent shadow-none">
+        <CardHeader>
+          <CardTitle>Forgot Password</CardTitle>
+          <CardDescription>
+            Enter your email to receive code from
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={initiateForgotPassword}
+            className="flex flex-col gap-2"
+          >
+            <Input
+              onChange={(e) => handleInputChange(e, regExp.email)}
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+            />
+            <Button type="submit" className="w-full">
+              Send code
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

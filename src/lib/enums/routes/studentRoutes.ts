@@ -12,7 +12,6 @@ const studentRoutesEnum = z.enum([
   '/student/modules/certificate',
   '/student/modules/grade',
   '/student/modules/internship',
-  '/student/profile',
   '/student/signin',
   '/student/signup',
   '/student/verify-email',

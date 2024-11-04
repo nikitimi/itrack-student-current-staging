@@ -1,17 +1,23 @@
 'use client';
 
-import Heading from '@/components/Heading';
 import { useAppSelector } from '@/hooks/redux';
 import {
-  authenticationUserID,
-  authenticationUserType,
-} from '@/redux/reducers/authenticationReducer';
-import {
   studentInfoNumber,
+  studentInfoFirstname,
+  studentInfoLastname,
   studentInfoSpecialization,
   studentInfoType,
 } from '@/redux/reducers/studentInfoReducer';
 import { useEffect, useState } from 'react';
+import {
+  Card,
+  CardDescription,
+  CardTitle,
+  CardHeader,
+  CardContent,
+} from '@/components/ui/card';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
 
 type InitialState = 'loading' | 'ready';
 const initialState = 'loading';
@@ -19,15 +25,15 @@ const initialState = 'loading';
 const AuthenticationHelper = () => {
   const [status, setStatus] = useState<InitialState>(initialState);
   const isReady = status === 'ready';
-
-  const authenticationSelector = useAppSelector((s) => s.authentication);
-  const _userId = authenticationUserID(authenticationSelector);
-  const _userType = authenticationUserType(authenticationSelector);
+  const loadingText = 'loading...';
 
   const studentInfoSelector = useAppSelector((s) => s.studentInfo);
   const _studentNumber = studentInfoNumber(studentInfoSelector);
   const _specialization = studentInfoSpecialization(studentInfoSelector);
   const _studentType = studentInfoType(studentInfoSelector);
+  const firstName = studentInfoFirstname(studentInfoSelector);
+  const lastName = studentInfoLastname(studentInfoSelector);
+  const fullName = `${firstName} ${lastName}`;
 
   useEffect(() => {
     setStatus('ready');
@@ -35,27 +41,46 @@ const AuthenticationHelper = () => {
 
   if (isReady) {
     return (
-      <div>
-        <Heading
-          text={`Specialization: ${_specialization?.replace(/_/g, ' ')}`}
-          type="SUB_TITLE"
-        />
-        <Heading text={`Student Type: ${_studentType}`} type="SUB_TITLE" />
-        <Heading text={`Student Number: ${_studentNumber}`} type="SUB_TITLE" />
-        <Heading text={`User ID: ${_userId}`} type="SUB_TITLE" />
-        <Heading text={`User Type: ${_userType}`} type="SUB_TITLE" />
-      </div>
+      <Card className="lg:1/2 mx-auto h-auto md:w-3/4">
+        <CardHeader>
+          <CardTitle>Student Information</CardTitle>
+          <CardDescription>{`Welcome ${fullName}!`}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LabelHelper
+            label="Specialization:"
+            value={_specialization?.replace(/_/g, ' ')}
+          />
+          <LabelHelper label="Student Type:" value={_studentType} />
+          <LabelHelper label="Student Number:" value={_studentNumber} />
+        </CardContent>
+      </Card>
     );
   }
   // TODO: Add loading here.
   return (
-    <div>
-      <Heading text={`Specialization: loading...`} type="SUB_TITLE" />
-      <Heading text={`Student Type: loading...`} type="SUB_TITLE" />
-      <Heading text={`Student Number: loading...`} type="SUB_TITLE" />
-      <Heading text={`User ID: loading...`} type="SUB_TITLE" />
-      <Heading text={`User Type: loading...`} type="SUB_TITLE" />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Student Information</CardTitle>
+        <CardDescription>
+          All information you provided resides here...
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <LabelHelper label="Specialization:" value={loadingText} />
+        <LabelHelper label="Student Type:" value={loadingText} />
+        <LabelHelper label="Student Number:" value={loadingText} />
+      </CardContent>
+    </Card>
+  );
+};
+
+const LabelHelper = (props: { label: string; value: string }) => {
+  return (
+    <section className="grid grid-cols-2 items-center">
+      <Label>{props.label}</Label>
+      <Input value={props.value} className="border-none" disabled />
+    </section>
   );
 };
 

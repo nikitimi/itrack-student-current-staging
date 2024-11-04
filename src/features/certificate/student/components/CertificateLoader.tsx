@@ -1,89 +1,85 @@
 'use client';
 
+import Loading from '@/components/Loading';
+import { Button } from '@/components/ui/button';
+import { CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   certificateList,
+  certificateModuleCompleted,
   certificateRemove,
 } from '@/redux/reducers/certificateReducer';
 import { EMPTY_STRING } from '@/utils/constants';
+import { useEffect, useState } from 'react';
 
 /** Loads the certificates uploaded by the student from the database. */
 const CertificateLoader = () => {
-  const _certificateList = certificateList(
-    useAppSelector((s) => s.certificate)
-  );
+  const [isCertificateLoaded, setCertificateState] = useState(false);
+  const selector = useAppSelector((s) => s.certificate);
+  const _certificateList = certificateList(selector);
+  const isCertificateCompleted = certificateModuleCompleted(selector);
   const dispatch = useAppDispatch();
   const invalidExtraCharactersRegex = /(%\d{1}\D{1})/g;
 
   function handleRemoveCertificate(
     certificate: (typeof _certificateList)[number]
   ) {
-    // const encodedCertificate = encodeURIComponent(certificate).replace(
-    //   invalidExtraCharactersRegex,
-    //   EMPTY_STRING
-    // );
-    // const tableRow = document.querySelector(
-    //   `tr#${encodedCertificate}`
-    // ) as HTMLTableRowElement;
-    // const toggleClasses = ['hidden'] as const;
-
-    // tableRow.classList.toggle(...toggleClasses);
-    console.log(certificate);
+    if (isCertificateCompleted) return alert('You cannot do that now.');
     dispatch(certificateRemove(certificate));
   }
 
+  useEffect(() => setCertificateState(true), []);
+
+  if (!isCertificateLoaded) return <Loading />;
+
   return (
-    <>
-      <div className="w-full bg-violet-400">
-        <div className="p-2">
-          <h3 className="font-geist-mono text-lg font-medium">
-            Acquired Certificates
-          </h3>
-          <section className="h-72 overflow-y-auto rounded-lg bg-violet-600">
-            <table className="relative w-full">
-              <thead className="sticky inset-x-0 top-0 bg-violet-600/90 p-2">
-                <tr>
-                  <th>Certificate Name</th>
+    <CardContent>
+      <Table className="relative w-full border p-2">
+        <TableHeader>
+          <TableRow className="capitalize">
+            <TableHead>certificate name</TableHead>
+            <TableHead>actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="rounded-lg">
+          {_certificateList.map((certificate) => {
+            const encodedCertificate = encodeURIComponent(certificate).replace(
+              invalidExtraCharactersRegex,
+              EMPTY_STRING
+            );
 
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody className="rounded-lg">
-                {_certificateList.map((certificate) => {
-                  const encodedCertificate = encodeURIComponent(
-                    certificate
-                  ).replace(invalidExtraCharactersRegex, EMPTY_STRING);
-
-                  return (
-                    <tr
-                      key={certificate}
-                      id={encodedCertificate}
-                      className="bg-violet-700 p-2"
+            return (
+              <TableRow key={certificate} id={encodedCertificate}>
+                <TableCell>
+                  <p>{certificate.replace(/_/g, ' ')}</p>
+                </TableCell>
+                <TableCell>
+                  <div
+                    className={`${isCertificateCompleted ? 'opacity-0' : 'flex'} justify-center gap-2`}
+                  >
+                    <Button
+                      variant="destructive"
+                      disabled={isCertificateCompleted}
+                      onClick={() => handleRemoveCertificate(certificate)}
                     >
-                      <td>
-                        <p className="text-center">
-                          {certificate.replace(/_/g, ' ')}
-                        </p>
-                      </td>
-                      <td>
-                        <div className="flex justify-center gap-2">
-                          <button
-                            className="h-12 w-24 rounded-lg bg-red-500 px-2 py-1 text-center text-white shadow-sm"
-                            onClick={() => handleRemoveCertificate(certificate)}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </section>
-        </div>
-      </div>
-    </>
+                      Remove
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </CardContent>
   );
 };
 

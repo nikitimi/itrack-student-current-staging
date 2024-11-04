@@ -3,6 +3,8 @@ import type { UserRole } from '@/lib/enums/userRole';
 
 export type StudentCreation = {
   role: UserRole;
+  firstName: string;
+  lastName: string;
   userId: string;
   studentNumber: string;
   specialization: Specialization;

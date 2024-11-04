@@ -1,73 +1,69 @@
+'use client';
+
 import Link from 'next/link';
-import { headers } from 'next/headers';
-import React from 'react';
 
-import studentRoutesEnum from '@/lib/enums/routes/studentRoutes';
-import { EMPTY_STRING, WRONG_NUMBER } from '@/utils/constants';
-
-const studentRoutes = studentRoutesEnum.options;
+import studentRoutesEnum, {
+  type StudentRoute,
+} from '@/lib/enums/routes/studentRoutes';
+import { EMPTY_STRING, ROUTE_DIVIDER, WRONG_NUMBER } from '@/utils/constants';
+import { usePathname } from 'next/navigation';
+import {
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+} from '@/components/ui/sidebar';
+import getDynamicClasses from '@/utils/getDynamicClasses';
+import { useEffect, useState } from 'react';
+import { AdminRoute } from '@/lib/enums/routes/adminRoutes';
 
 const ModuleNav = () => {
-  const routeDivider = '/';
-  const headerList = headers();
-  const moduleRoutes = studentRoutes.filter(
-    (route) => route.includes('modules') && route.split(routeDivider).length > 3
-  );
-  const fullPath = headerList.get('x-pathname');
+  const studentRoutes = studentRoutesEnum.options;
+  const pathname = usePathname() as StudentRoute;
+  const [state, setState] = useState<(StudentRoute | AdminRoute)[]>([]);
   const lastIndexOfRouteDivider =
-    fullPath?.lastIndexOf(routeDivider) ?? WRONG_NUMBER;
+    pathname?.lastIndexOf(ROUTE_DIVIDER) ?? WRONG_NUMBER;
   const pathName =
-    fullPath?.substring(lastIndexOfRouteDivider + 1, fullPath.length) ??
+    pathname?.substring(lastIndexOfRouteDivider + 1, pathname.length) ??
     EMPTY_STRING;
 
+  useEffect(() => {
+    if (state.length === 0) {
+      const moduleRoutes = studentRoutes.filter((route) => {
+        const isModuleRoute =
+          route.includes('modules') && route.split(ROUTE_DIVIDER).length > 3;
+
+        // Limit the showing of modules to the condition on the next line.
+        return isModuleRoute;
+      });
+
+      setState(moduleRoutes);
+    }
+  }, [state.length, studentRoutes]);
+
   return (
-    <div className="bg-violet-200 p-2">
-      <h3 className="py-8 text-center text-lg">Modules:</h3>
-      <section className="flex justify-between">
-        {moduleRoutes.map((route) => {
-          const name = route.split('/')[3];
+    <SidebarMenuSub>
+      {state.map((route) => {
+        const name = route.split('/')[3];
 
-          const isActiveRoute = name.includes(pathName);
+        const isActiveRoute = name === pathName;
+        const defaultClasses = ['capitalize'];
 
-          const defaultClasses = [
-            'rounded-lg',
-            'border',
-            'p-12',
-            'capitalize',
-            'duration-300',
-            'ease-in-out',
-          ];
-          const colorClasses = ['border-black', 'bg-slate-400', 'text-black'];
-          const hoverClasses = [
-            'hover:bg-blue-400/80',
-            'hover:border-blue-400',
-          ];
-          const activeClasses = [
-            'border-green-700',
-            'bg-green-700',
-            'text-white',
-          ];
-
-          return (
-            <Link key={route} href={route}>
-              <button
+        return (
+          <SidebarMenuSubItem key={route}>
+            <Link href={route}>
+              <SidebarMenuButton
                 disabled={isActiveRoute}
-                className={[
-                  ...(isActiveRoute
-                    ? activeClasses
-                    : [...hoverClasses, ...colorClasses]),
+                className={`${getDynamicClasses(isActiveRoute)} ${[
                   ...defaultClasses,
-                ]
-                  .toLocaleString()
-                  .replace(/,/g, ' ')}
+                ]}`}
               >
                 {name}
-              </button>
+              </SidebarMenuButton>
             </Link>
-          );
-        })}
-      </section>
-    </div>
+          </SidebarMenuSubItem>
+        );
+      })}
+    </SidebarMenuSub>
   );
 };
 

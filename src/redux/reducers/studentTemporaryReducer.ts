@@ -8,6 +8,8 @@ import { EMPTY_STRING } from '@/utils/constants';
 type InitialState = {
   specialization: Specialization;
   studentNumber: string;
+  firstName: string;
+  lastName: string;
 };
 /** `studentNumber`: ***'null'*** if userType is ***'anonymous'***.
  *
@@ -19,6 +21,8 @@ type InitialState = {
 const initialState: InitialState = {
   specialization: 'BUSINESS_ANALYTICS',
   studentNumber: EMPTY_STRING,
+  firstName: EMPTY_STRING,
+  lastName: EMPTY_STRING,
 };
 
 /** This is for managing the state in studentTemporary module of students. */
@@ -38,14 +42,32 @@ const studentInfoSlice = createSlice({
     ) {
       state.specialization = action.payload;
     },
+    studentTemporarySetFirstname(
+      state,
+      action: { payload: InitialState['firstName'] }
+    ) {
+      state.firstName = action.payload;
+    },
+    studentTemporarySetLastname(
+      state,
+      action: { payload: InitialState['lastName'] }
+    ) {
+      state.lastName = action.payload;
+    },
     studentTemporaryResetState(state) {
       state.specialization = initialState.specialization;
       state.studentNumber = initialState.studentNumber;
+      state.firstName = initialState.firstName;
+      state.lastName = initialState.lastName;
     },
   },
 });
 
 // SELECTORS.
+export const studentTemporaryFirstname = (a: RootState['studentTemporary']) =>
+  a.firstName;
+export const studentTemporaryLastname = (a: RootState['studentTemporary']) =>
+  a.lastName;
 export const studentTemporaryNumber = (a: RootState['studentTemporary']) =>
   a.studentNumber;
 export const studentTemporarySpecialization = (
@@ -56,6 +78,8 @@ export const studentTemporarySpecialization = (
 export const {
   studentTemporaryResetState,
   studentTemporarySetNumber,
+  studentTemporarySetFirstname,
+  studentTemporarySetLastname,
   studentTemporarySetSpecialization,
 } = studentInfoSlice.actions;
 export default studentInfoSlice.reducer;
