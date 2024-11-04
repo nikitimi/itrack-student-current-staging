@@ -5,6 +5,7 @@ import type { StudentRoute } from '@/lib/enums/routes/studentRoutes';
 import handleClerkAuthMiddleware from '@/server/utils/middleware/handleClerkAuthMiddleware';
 import setStudentNumber from '@/server/utils/middleware/setStudentNumber';
 import { HEADER_KEY } from '@/utils/constants';
+import { GetStudentNumber } from '@/server/lib/schema/apiResponse/getStudentNumber';
 
 type Routes = AdminRoute | StudentRoute;
 
@@ -18,8 +19,22 @@ export default clerkMiddleware(async (auth, request) => {
     return handleClerkAuthMiddleware(pathname, request);
   }
 
-  const { role, specialization, studentNumber, studentType } =
-    await setStudentNumber(session, origin);
+  const studentNumberResult = await setStudentNumber(session, origin);
+
+  if (typeof studentNumberResult === 'string')
+    return console.log(
+      'Student number fetched is a string, cannot set in headers.'
+    );
+
+  const {
+    role,
+    specialization,
+    studentNumber,
+    studentType,
+    firstName,
+    lastName,
+  } = studentNumberResult as GetStudentNumber;
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(HEADER_KEY.origin, origin);
   requestHeaders.set(HEADER_KEY.pathname, pathname);
@@ -27,6 +42,8 @@ export default clerkMiddleware(async (auth, request) => {
   requestHeaders.set(HEADER_KEY.studentNumber, studentNumber);
   requestHeaders.set(HEADER_KEY.studentType, studentType);
   requestHeaders.set(HEADER_KEY.specialization, specialization);
+  requestHeaders.set(HEADER_KEY.firstName, firstName);
+  requestHeaders.set(HEADER_KEY.lastName, lastName);
   requestHeaders.set(HEADER_KEY.uid, session.userId);
   requestHeaders.set(HEADER_KEY.url, request.url);
 

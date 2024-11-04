@@ -3,9 +3,11 @@ import type { AddUserTypeResponse } from '@/server/lib/schema/apiResponse/addUse
 import { NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import getStudentType from '@/utils/getStudentType';
+import StudentCreation from '@/utils/types/studentCreation';
 
 export async function POST(request: Request) {
-  const { role, specialization, studentNumber, userId } = await request.json();
+  const { role, specialization, studentNumber, userId, firstName, lastName } =
+    (await request.json()) as StudentCreation;
   const clerk = await clerkClient();
   const studentType = getStudentType(studentNumber as string);
   let response: AddUserTypeResponse = {
@@ -19,6 +21,8 @@ export async function POST(request: Request) {
       specialization,
       studentNumber,
       studentType,
+      firstName,
+      lastName,
     },
   });
 

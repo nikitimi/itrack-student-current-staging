@@ -6,6 +6,7 @@ import React from 'react';
 import gradeResult from '../utils/gradeResult';
 import { studentInfoSpecialization } from '@/redux/reducers/studentInfoReducer';
 
+/** This will show Result of COG. */
 const GradeConfirmation = () => {
   const _grades = grades(useAppSelector((s) => s.grade));
   const specialization = studentInfoSpecialization(

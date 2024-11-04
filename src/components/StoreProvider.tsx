@@ -8,11 +8,12 @@ import type { MongoExtra } from '@/lib/schema/mongoExtra';
 import type { Children } from '@/utils/types/children';
 import type GradeInfo from '@/utils/types/gradeInfo';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Provider } from 'react-redux';
 
 import { useAppDispatch } from '@/hooks/redux';
 import {
+  authenticationSetStatus,
   authenticationSetUserID,
   authenticationSetUserType,
 } from '@/redux/reducers/authenticationReducer';
@@ -21,6 +22,9 @@ import { certificateAdd } from '@/redux/reducers/certificateReducer';
 import { gradesAdd } from '@/redux/reducers/gradeReducer';
 import store from '@/redux/store';
 import {
+  studentInfoSetChartData,
+  studentInfoSetFirstname,
+  studentInfoSetLastname,
   studentInfoSetNumber,
   studentInfoSetSpecialization,
   studentInfoSetType,
@@ -33,8 +37,11 @@ import {
   internshipSetCompletion,
   internshipTaskAdd,
 } from '@/redux/reducers/internshipReducer';
+import { ChartData } from '@/utils/types/chartData';
+import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
+import { useAuth } from '@clerk/nextjs';
 
-type StoreProviderParams = {
+type LayoutFetcher = {
   userId: string | null;
   specialization: Specialization;
   studentType: StudentType;
@@ -43,40 +50,59 @@ type StoreProviderParams = {
   grades: (GradeInfo & MongoExtra)[];
   certificate: Certificate[];
   internship?: Omit<InternshipResult, 'status'> & MongoExtra;
-} & Children;
+  firstName: string;
+  lastName: string;
+  chartData: ChartData[];
+};
 
-export default function StoreProvider({
-  children,
-  ...rest
-}: StoreProviderParams) {
+export default function StoreProvider({ children }: Children) {
   return (
     <Provider store={store}>
-      <StoreInitializer {...rest}>{children}</StoreInitializer>
+      <StoreInitializer>{children}</StoreInitializer>
     </Provider>
   );
 }
 
-const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
-  const { role, specialization, studentType, studentNumber, userId } = rest;
+const StoreInitializer = ({ children }: Children) => {
   const dispatch = useAppDispatch();
+  const { userId } = useAuth();
 
-  // This will control the state of the app whether the students can input in the forms.
-  useEffect(() => {
-    if (rest.certificate.length > 0) {
+  const fetchLayoutHelper = useCallback(async () => {
+    const response = await fetch('/api/initializeApp', {
+      method: 'GET',
+    });
+    const json = (await response.json()) as BaseAPIResponse<LayoutFetcher>;
+
+    if (!response.ok || typeof userId !== 'string') {
+      dispatch(authenticationSetStatus('no user'));
+      return json.errorMessage.forEach((errorMessage) =>
+        console.log(errorMessage)
+      );
+    }
+
+    const {
+      certificate,
+      grades,
+      internship,
+      chartData,
+      role,
+      specialization,
+      studentNumber,
+      studentType,
+      lastName,
+      firstName,
+      ...rest
+    } = json.data;
+
+    if (certificate.length > 0) {
       dispatch(certificateModuleStateUpdate(true));
-      rest.certificate.forEach((certificate) =>
+      certificate.forEach((certificate) =>
         dispatch(certificateAdd(certificate))
       );
     }
-  }, [rest.certificate, dispatch]);
 
-  useEffect(
-    () => rest.grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo))),
-    [rest.grades, dispatch]
-  );
-  useEffect(() => {
-    if (rest.internship !== undefined) {
-      const { isITCompany, grade, tasks } = rest.internship;
+    if (internship !== undefined) {
+      const { isITCompany, grade, tasks } = internship;
       dispatch(internshipCompanyQuestionUpdate(isITCompany));
       dispatch(internshipGradeUpdate(grade));
       tasks.forEach((task) => {
@@ -84,15 +110,20 @@ const StoreInitializer = ({ children, ...rest }: StoreProviderParams) => {
       });
       dispatch(internshipSetCompletion(true));
     }
-  }, [rest.internship, dispatch]);
 
-  useEffect(() => {
+    grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo)));
+    chartData.forEach((c) => dispatch(studentInfoSetChartData(c)));
+    dispatch(studentInfoSetFirstname(firstName));
+    dispatch(studentInfoSetLastname(lastName));
     dispatch(studentInfoSetSpecialization(specialization));
     dispatch(studentInfoSetType(studentType));
     dispatch(studentInfoSetNumber(studentNumber));
     dispatch(authenticationSetUserType(role));
-    dispatch(authenticationSetUserID(userId ?? EMPTY_STRING));
-  }, [dispatch, role, specialization, studentNumber, studentType, userId]);
+    dispatch(authenticationSetUserID(rest.userId ?? EMPTY_STRING));
+    dispatch(authenticationSetStatus('authenticated'));
+  }, [dispatch, userId]);
+
+  useEffect(() => void fetchLayoutHelper(), [fetchLayoutHelper]);
 
   return <>{children}</>;
 };

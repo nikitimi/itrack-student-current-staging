@@ -214,6 +214,6 @@ export default function gradeResult(props: GradeResultProps) {
     return sortedFinalRecord;
   } catch (e) {
     const error = e as Error;
-    alert(error.message);
+    console.log(error.message);
   }
 }

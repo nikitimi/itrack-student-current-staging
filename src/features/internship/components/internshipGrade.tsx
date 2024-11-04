@@ -1,5 +1,12 @@
 'use client';
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   internshipGradeUpdate,
@@ -39,17 +46,22 @@ const InternshipGrade = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center gap-4 bg-violet-400 p-4">
-      <input
-        required
-        type="text"
-        placeholder="Put your internship grade"
-        className="h-12 rounded-lg border-4 bg-background p-2 text-foreground shadow-sm duration-300 ease-in-out"
-        maxLength={3}
-        disabled={isInternshipModuleCompleted}
-        onChange={handleGradeChange}
-      />
-    </div>
+    <Card className="rounded-none border-none bg-transparent shadow-none">
+      <CardHeader>
+        <CardDescription>What is your internship grade?</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Input
+          required
+          type="text"
+          placeholder="Grade"
+          className="h-12 rounded-lg border-4 bg-background p-2 text-foreground shadow-sm duration-300 ease-in-out"
+          maxLength={3}
+          disabled={isInternshipModuleCompleted}
+          onChange={handleGradeChange}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

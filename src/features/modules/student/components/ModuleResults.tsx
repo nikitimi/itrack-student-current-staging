@@ -1,10 +1,19 @@
 'use client';
 
-import React from 'react';
+import { useEffect, useState } from 'react';
 
-import Heading from '@/components/Heading';
 import useModuleInputController from '@/hooks/useModuleInputController';
 import useRevealAllModulesResult from '@/hooks/useRevealAllModulesResult';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import { SidebarMenuSkeleton } from '@/components/ui/sidebar';
 
 const ModuleResults = () => {
   const {
@@ -14,98 +23,119 @@ const ModuleResults = () => {
   } = useModuleInputController();
   const { certificate, grades, internship, jobHolder } =
     useRevealAllModulesResult();
+  const [state, setState] = useState(false);
+  const results = [
+    {
+      title: 'certificate',
+      conditionToRender: isCertificateModuleCompleted,
+      objectArray: certificate,
+    },
+    {
+      title: 'academic grades',
+      conditionToRender: isGradesModuleCompleted,
+      objectArray: grades ?? [],
+    },
+    {
+      title: 'internship',
+      conditionToRender: isInternshipModuleCompleted,
+      objectArray: internship,
+    },
+    {
+      title: 'overall result',
+      conditionToRender: true,
+      objectArray: Object.entries(jobHolder).splice(0, 3),
+    },
+  ];
+  const titles = results.flatMap(({ title }) => title);
+
+  useEffect(() => setState(true), []);
+
+  if (!state)
+    return (
+      <>
+        {titles.map((title) => (
+          <RenderTable
+            isLoading
+            key={title}
+            title={title}
+            conditionToRender={true}
+            objectArray={[]}
+          />
+        ))}
+      </>
+    );
 
   return (
-    <>
-      <div className="grid grid-cols-3">
-        <section className="bg-blue-500">
-          <Heading text="Certificates:" type="SUB_TITLE" />
-          <div>
-            {isCertificateModuleCompleted ? (
-              certificate.map(([key, number], index) => {
-                //   handleIncrementJobState(key as PossibleJob, points);
-                console.log({ key, number });
+    <div className="flex flex-col gap-2 p-2">
+      {results.map((props) => {
+        return <RenderTable key={props.title} {...props} />;
+      })}
+    </div>
+  );
+};
 
-                return (
-                  <div key={key} className="flex justify-between px-4 text-sm">
-                    <p className="capitalize text-foreground">
-                      {key.replace(/_/g, ' ').toLocaleLowerCase()}
-                    </p>
-                    {/* <p>{number}</p> */}
-                    <p>{index + 1}</p>
-                  </div>
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </div>
-        </section>
-        <section className="bg-blue-700">
-          <Heading text="Academic grades:" type="SUB_TITLE" />
-          <div>
-            {isGradesModuleCompleted ? (
-              grades?.map(([key, number], index) => {
-                // const gradeRoundedOff = Math.floor(number)
-                //   handleIncrementJobState(key as PossibleJob, points);
-                console.log({ key, number });
+const RenderTable = (props: {
+  title: string;
+  conditionToRender: boolean;
+  objectArray: Array<[string, number]>;
+  isLoading?: boolean;
+}) => {
+  const heading = {
+    one: 'careers',
+    two: 'ranks',
+  };
+  /** TODO: CRITICAL... This causes hydration issues, please refactor. */
+  function handleTableRender() {
+    if (props.isLoading)
+      return (
+        <TableRow>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <SidebarMenuSkeleton key={index} showIcon />
+          ))}
+        </TableRow>
+      );
 
-                return (
-                  <div key={key} className="flex justify-between px-4 text-sm">
-                    <p className="capitalize text-foreground">
-                      {key.replace(/_/g, ' ').toLocaleLowerCase()}
-                    </p>
-                    <p>{index + 1}</p>
-                  </div>
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </div>
-        </section>
-        <section className="bg-blue-500">
-          <Heading text="Internship:" type="SUB_TITLE" />
-          <div>
-            {isInternshipModuleCompleted ? (
-              internship.map(([key, number], index) => {
-                // handleIncrementJobState(key as PossibleJob, points);
-                console.log({ key, number });
+    return (
+      <>
+        <TableHeader className="capitalize">
+          <TableRow>
+            <TableHead>
+              <p>{heading.one}</p>
+            </TableHead>
+            <TableHead>
+              <p>{heading.two}</p>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {props.conditionToRender ? (
+            props.objectArray.map(([key], index) => {
+              return (
+                <TableRow key={key}>
+                  <TableCell className="capitalize">
+                    {key.replace(/_/g, ' ').toLocaleLowerCase()}
+                  </TableCell>
+                  {/* <p>{number}</p> */}
+                  <TableCell>{index + 1}</TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
+            // No results yet.
+            <TableRow />
+          )}
+        </TableBody>
+      </>
+    );
+  }
 
-                return (
-                  <div key={key} className="flex justify-between px-4 text-sm">
-                    <p className="capitalize text-foreground">
-                      {key.replace(/_/g, ' ').toLocaleLowerCase()}
-                    </p>
-                    {/* <p>{number}</p> */}
-                    <p>{index + 1}</p>
-                  </div>
-                );
-              })
-            ) : (
-              <></>
-            )}
-          </div>
-        </section>
-      </div>
-      <div className="grid grid-cols-1">
-        {Object.entries(jobHolder)
-          .splice(0, 3)
-          .map(([key, number]) => {
-            return (
-              <div
-                key={key}
-                className="flex justify-between bg-blue-600 px-4 text-sm"
-              >
-                <p className="capitalize">
-                  {key.replace(/_/g, ' ').toLocaleLowerCase()}
-                </p>
-                <p>{number}</p>
-              </div>
-            );
-          })}
-      </div>
-    </>
+  return (
+    <Card className="p-2">
+      <CardTitle className="capitalize">{`${props.title}:`}</CardTitle>
+      <CardContent>
+        <Table>{handleTableRender()}</Table>
+      </CardContent>
+    </Card>
   );
 };
 

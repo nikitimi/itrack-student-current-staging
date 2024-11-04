@@ -7,6 +7,7 @@ const apiRoutesEnum = z.enum([
   '/api/extractExcelData',
   '/api/extractPDFData',
   '/api/getStudentNumber',
+  '/api/initializeApp',
   '/api/mongo/grades',
   '/api/mongo/internship',
   '/api/mongo/certificate',

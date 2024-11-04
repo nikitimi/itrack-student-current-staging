@@ -1,12 +1,22 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import adminRoutesEnum from '@/lib/enums/routes/adminRoutes';
+import adminRoutesEnum, { AdminRoute } from '@/lib/enums/routes/adminRoutes';
 import publicRoutesEnum from '@/lib/enums/routes/publicRoutes';
-import studentRoutesEnum from '@/lib/enums/routes/studentRoutes';
+import studentRoutesEnum, {
+  StudentRoute,
+} from '@/lib/enums/routes/studentRoutes';
 import { EMPTY_STRING, ROUTE_DIVIDER } from '@/utils/constants';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
+import { LayoutDashboardIcon, LifeBuoyIcon, PieChartIcon } from 'lucide-react';
+import { Collapsible, CollapsibleContent } from './ui/collapsible';
+// eslint-disable-next-line boundaries/element-types
+import ModuleNav from '@/features/modules/student/components/ModuleNav';
+import getDynamicClasses from '@/utils/getDynamicClasses';
+import { useAppSelector } from '@/hooks/redux';
+import { authenticationUserType } from '@/redux/reducers/authenticationReducer';
+import { useEffect, useState } from 'react';
 
 const adminRoutes = adminRoutesEnum.options;
 const publicRoutes = publicRoutesEnum.options;
@@ -14,11 +24,15 @@ const studentRoutes = studentRoutesEnum.options;
 
 const Nav = () => {
   const pathname = usePathname();
-  const isPathnameForStudents = pathname.includes('/student');
-  const dynamicRoute = isPathnameForStudents ? studentRoutes : adminRoutes;
-  const dashboard = dynamicRoute[0];
+  const userRole = authenticationUserType(
+    useAppSelector((s) => s.authentication)
+  );
+  const [state, setState] = useState<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { title: string; url: StudentRoute | AdminRoute; icon: any }[]
+  >([]);
 
-  function routeHelper(route: (typeof dynamicRoute)[number]) {
+  function routeHelper(route: StudentRoute | AdminRoute) {
     const routeFragments = route.split(ROUTE_DIVIDER);
     const filteredRouteFragments = routeFragments.filter(
       (r) => r !== EMPTY_STRING
@@ -30,36 +44,80 @@ const Nav = () => {
     return { filteredRouteFragments, finalRouteName };
   }
 
-  return (
-    <nav className="bg-blue-700 p-2">
-      <ul className="flex flex-row justify-between">
-        {dynamicRoute
+  useEffect(() => {
+    function initializeNav() {
+      if (state.length === 0) {
+        const isPathnameForStudents =
+          pathname.includes('/student') || userRole === 'student';
+        const dynamicRoute = isPathnameForStudents
+          ? studentRoutes
+          : adminRoutes;
+        const dashboard = dynamicRoute[0];
+        const iconRecord = {
+          dashboard: PieChartIcon,
+          modules: LayoutDashboardIcon,
+          // profile: UserIcon,
+          about: LifeBuoyIcon,
+        };
+        const renderThisRoutes = dynamicRoute
           .filter((route) => {
             const { finalRouteName } = routeHelper(route);
 
             return !publicRoutes.toLocaleString().includes(finalRouteName);
           })
           .map((route) => {
-            const { filteredRouteFragments, finalRouteName } =
-              routeHelper(route);
+            const { filteredRouteFragments, ...rest } = routeHelper(route);
+            const finalRouteName =
+              dashboard === route ? 'dashboard' : rest.finalRouteName;
+            const icon = iconRecord[finalRouteName as keyof typeof iconRecord];
+            return filteredRouteFragments.length === 3 || !icon
+              ? null
+              : {
+                  title: finalRouteName,
+                  url: route,
+                  icon,
+                };
+          })
+          .filter((i) => i !== null);
+        setState(renderThisRoutes);
+      }
+    }
 
-            switch (filteredRouteFragments.length) {
-              case 3:
-                return null;
-              default:
-                return (
-                  <li key={route}>
-                    <Link href={route} passHref>
-                      <button className="w-32 gap-2 rounded-lg border px-2 py-1 capitalize duration-200 ease-in-out hover:border-black hover:bg-black">
-                        {dashboard === route ? 'Dashboard' : finalRouteName}
-                      </button>
-                    </Link>
-                  </li>
-                );
-            }
-          })}
-      </ul>
-    </nav>
+    return initializeNav();
+  }, [state.length, userRole, pathname]);
+
+  return (
+    <SidebarMenu>
+      {state.map((item) => {
+        const isModules = item.title === 'modules';
+        const dynamicClasses = getDynamicClasses(pathname === item.url);
+
+        return isModules ? (
+          <Collapsible open className="group/collapsible" key={item.title}>
+            <SidebarMenuItem>
+              <SidebarMenuButton className={dynamicClasses} asChild>
+                <a href={item.url} className="flex">
+                  <item.icon />
+                  <span className="capitalize">{item.title}</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <CollapsibleContent>
+              <ModuleNav />
+            </CollapsibleContent>
+          </Collapsible>
+        ) : (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton className={dynamicClasses} asChild>
+              <a href={item.url}>
+                <item.icon />
+                <span className="capitalize">{item.title}</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
+    </SidebarMenu>
   );
 };
 

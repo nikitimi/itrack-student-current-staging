@@ -3,6 +3,8 @@ export const HEADER_KEY = {
   origin: 'x-origin',
   pathname: 'x-pathname',
   role: 'x-role',
+  firstName: 'x-firstName',
+  lastName: 'x-lastName',
   specialization: 'x-specialization',
   studentNumber: 'x-studentNumber',
   studentType: 'x-studentType',

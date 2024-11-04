@@ -13,6 +13,8 @@ import {
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import fetchHelper from '@/utils/fetch';
+import { CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type InitialState = {
   status: 'empty certificate not triggered' | 'empty certificate triggered';
@@ -76,17 +78,11 @@ const CertificateConfirmation = () => {
     }
   }
   return (
-    <div className="w-full bg-violet-500 p-2">
-      <div className="grid">
-        <button
-          className="h-12 rounded-lg bg-background px-2 py-1 text-foreground shadow-sm duration-300 ease-in-out hover:bg-green-600"
-          disabled={isCertificateCompleted}
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
-      </div>
-    </div>
+    <CardFooter className="grid">
+      <Button onClick={handleSubmit} disabled={isCertificateCompleted}>
+        Submit
+      </Button>
+    </CardFooter>
   );
 };
 

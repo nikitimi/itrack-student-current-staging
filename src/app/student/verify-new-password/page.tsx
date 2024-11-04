@@ -2,7 +2,7 @@
 
 import { type FormEvent } from 'react';
 
-import Input from '@/components/Input';
+import { Input } from '@/components/ui/input';
 import type { UserRole } from '@/lib/enums/userRole';
 import type { Specialization } from '@/lib/enums/specialization';
 import { useSignIn } from '@clerk/nextjs';
@@ -13,6 +13,9 @@ import {
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
 import { EMPTY_STRING } from '@/utils/constants';
+import { Card } from '@/components/ui/card';
+import handleInputChange from '@/utils/handleInputChange';
+import { Button } from '@/components/ui/button';
 
 export type StudentCreation = {
   role: UserRole;
@@ -65,35 +68,37 @@ const VerifyNewPassword = () => {
   }
 
   return (
-    <div>
-      <form onSubmit={confirmForgotPassword}>
-        <Input
-          regExp={/\d{6}/}
-          type="text"
-          name="code"
-          placeholder="Verification code xxxxxx"
-          maxLength={6}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-        />
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm password"
-          required
-        />
-        <button
-          type="submit"
-          className="h-12 rounded-lg bg-foreground px-2 py-1 text-background shadow-sm duration-300 ease-in-out hover:bg-blue-500 hover:text-foreground"
-        >
-          Submit code
-        </button>
-      </form>
+    <div className="itens-center flex h-screen justify-center">
+      <Card className="w-3/4 rounded-none border-none shadow-none">
+        <form onSubmit={confirmForgotPassword}>
+          <Input
+            onChange={(e) => handleInputChange(e, /\d{6}/)}
+            type="text"
+            name="code"
+            placeholder="Verification code xxxxxx"
+            maxLength={6}
+            required
+          />
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <Input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            required
+          />
+          <Button
+            type="submit"
+            className="w-full"
+          >
+            Submit code
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 };

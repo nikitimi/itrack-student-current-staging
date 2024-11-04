@@ -21,6 +21,15 @@ import { ExtractedCOGDataResponse } from '@/server/lib/schema/extractedCOGData';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { useEffect, useState } from 'react';
 import fetchHelper from '@/utils/fetch';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 
 type ExtraProps = {
   yearLevelIndex: number;
@@ -167,8 +176,21 @@ const COGDataExtractor = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <input name="file" type="file" required disabled={isInputDisabled} />
-        <button disabled={isInputDisabled}>Reveal</button>
+        <Card className="mt-12 rounded-none border-none shadow-none">
+          <CardHeader>
+            <CardTitle>COG Extractor</CardTitle>
+            <CardDescription>Upload your COG here</CardDescription>
+          </CardHeader>
+          <CardContent className="flex">
+            <Input
+              name="file"
+              type="file"
+              required
+              disabled={isInputDisabled}
+            />
+            <Button disabled={isInputDisabled}>Upload COG</Button>
+          </CardContent>
+        </Card>
       </form>
     </>
   );

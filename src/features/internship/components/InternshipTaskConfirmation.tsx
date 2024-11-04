@@ -14,6 +14,8 @@ import fetchHelper from '@/utils/fetch';
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { InternshipTask } from '@/lib/enums/internshipTask';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 const InternshipTaskConfirmation = () => {
   const [isTaskAlertPrompted, setTaskAlertPromp] = useState(false);
@@ -28,6 +30,9 @@ const InternshipTaskConfirmation = () => {
 
   async function handleInternshipSubmit() {
     try {
+      if (isInternshipModuleCompleted)
+        throw new Error("You've already submitted your internship details.");
+
       const getInternship = await fetchHelper('/api/mongo/internship', 'GET', {
         studentNumber,
       });
@@ -74,17 +79,14 @@ const InternshipTaskConfirmation = () => {
   }
 
   return (
-    <div className="w-full bg-violet-800 p-2">
-      <div className="grid">
-        <button
-          disabled={isInternshipModuleCompleted}
-          className="h-12 rounded-lg bg-background px-2 py-1 text-foreground shadow-sm duration-300 ease-in-out hover:bg-green-600 hover:text-white"
-          onClick={handleInternshipSubmit}
-        >
-          Submit
-        </button>
-      </div>
-    </div>
+    <Card className="grid rounded-none border-none bg-transparent p-2 shadow-none">
+      <Button
+        disabled={isInternshipModuleCompleted}
+        onClick={handleInternshipSubmit}
+      >
+        Submit internship details
+      </Button>
+    </Card>
   );
 };
 
