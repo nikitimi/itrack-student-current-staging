@@ -14,10 +14,10 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import useInternshipInputControl from '@/hooks/useInternshipInputControl';
 import type { InternshipTask } from '@/lib/enums/internshipTask';
 import internshipTaskEnum from '@/lib/enums/internshipTask';
 import {
-  internshipModuleCompleted,
   internshipTaskAdd,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
@@ -28,8 +28,7 @@ const InternshipTaskSelector = () => {
   const dispatch = useAppDispatch();
   const selector = useAppSelector((s) => s.internship);
   const _internshipTasks = internshipTasks(selector);
-  const _internshipModuleCompleted = internshipModuleCompleted(selector);
-  const isInternshipModuleCompleted = _internshipModuleCompleted === true;
+  const { isInputDisabled } = useInternshipInputControl();
 
   function handleTaskAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,7 +41,6 @@ const InternshipTaskSelector = () => {
       }
 
       dispatch(internshipTaskAdd(selectedTask));
-      console.log(`${selectedTask} added`);
     } catch (e) {
       const error = e as Error;
       alert(error.message);
@@ -56,7 +54,7 @@ const InternshipTaskSelector = () => {
           <CardDescription>Internship Task Selector</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-2">
-          <Select name="selectedTask" disabled={isInternshipModuleCompleted}>
+          <Select name="selectedTask" disabled={isInputDisabled}>
             <SelectTrigger>
               <SelectValue placeholder="Internship Tasks" />
             </SelectTrigger>
@@ -73,11 +71,7 @@ const InternshipTaskSelector = () => {
                 })}
             </SelectContent>
           </Select>
-          <Button
-            variant="outline"
-            type="submit"
-            disabled={isInternshipModuleCompleted}
-          >
+          <Button variant="outline" type="submit" disabled={isInputDisabled}>
             Add Task
           </Button>
         </CardContent>

@@ -33,7 +33,6 @@ import { InternshipResult } from '@/utils/types/internshipResult';
 import {
   internshipCompanyQuestionUpdate,
   internshipGradeUpdate,
-  internshipSetCompletion,
   internshipTaskAdd,
 } from '@/redux/reducers/internshipReducer';
 import { ChartData } from '@/utils/types/chartData';
@@ -130,7 +129,19 @@ const StoreInitializer = ({ children }: Children) => {
       tasks.forEach((task) => {
         dispatch(internshipTaskAdd(task));
       });
-      dispatch(internshipSetCompletion(true));
+      dispatch(
+        inputControlSetPromptType({
+          key: 'internshipModule',
+          promptType: 'fetched from server',
+        })
+      );
+    } else {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'internshipModule',
+          promptType: 'no document',
+        })
+      );
     }
 
     grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo)));

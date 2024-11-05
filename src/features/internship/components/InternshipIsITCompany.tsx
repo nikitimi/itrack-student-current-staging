@@ -8,19 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import {
-  internshipCompanyQuestionUpdate,
-  internshipModuleCompleted,
-} from '@/redux/reducers/internshipReducer';
+import { useAppDispatch } from '@/hooks/redux';
+import useInternshipInputControl from '@/hooks/useInternshipInputControl';
+import { internshipCompanyQuestionUpdate } from '@/redux/reducers/internshipReducer';
 
 const InternshipIsITCompany = () => {
   const dispatch = useAppDispatch();
   const yesOrNo = ['yes', 'no'] as const;
-  const _internshipModuleCompleted = internshipModuleCompleted(
-    useAppSelector((s) => s.internship)
-  );
-  const isInternshipModuleCompleted = _internshipModuleCompleted === true;
+  const { isInputDisabled } = useInternshipInputControl();
 
   function setIsITState(yesNo: (typeof yesOrNo)[number]) {
     dispatch(internshipCompanyQuestionUpdate(yesNo === 'yes'));
@@ -42,7 +37,7 @@ const InternshipIsITCompany = () => {
               key={yesNo}
               type="button"
               className="capitalize"
-              disabled={isInternshipModuleCompleted}
+              disabled={isInputDisabled}
               variant={isYes ? 'outline' : 'destructive'}
               onClick={() => setIsITState(yesNo)}
             >

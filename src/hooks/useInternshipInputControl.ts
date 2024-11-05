@@ -6,9 +6,9 @@ const useCertificateInputControl = () => {
   const inputControl = internshipModuleInputControl(
     useAppSelector((s) => s.inputControl)
   );
-  const disableInputs = disabledPromptList.includes(inputControl);
+  const isInputDisabled = disabledPromptList.includes(inputControl);
 
-  return disableInputs;
+  return { isInputDisabled, internshipInputControl: inputControl };
 };
 
 export default useCertificateInputControl;
