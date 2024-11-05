@@ -1,6 +1,6 @@
 'use client';
 
-import { type FormEvent } from 'react';
+import { useEffect, type FormEvent } from 'react';
 
 import { Input } from '@/components/ui/input';
 import type { UserRole } from '@/lib/enums/userRole';
@@ -13,9 +13,15 @@ import {
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import useAppRouter from '@/hooks/useAppRouter';
 import { EMPTY_STRING } from '@/utils/constants';
-import { Card } from '@/components/ui/card';
-import handleInputChange from '@/utils/handleInputChange';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import OTP from '@/components/OTP';
 
 export type StudentCreation = {
   role: UserRole;
@@ -30,12 +36,6 @@ const VerifyNewPassword = () => {
   const dispatch = useAppDispatch();
   const selector = useAppSelector((s) => s.authentication);
   const _authenticationStatus = authenticationStatus(selector);
-
-  if (
-    window !== undefined &&
-    _authenticationStatus !== 'verifying new password'
-  )
-    return router.back();
 
   async function confirmForgotPassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,37 +67,44 @@ const VerifyNewPassword = () => {
     }
   }
 
+  useEffect(() => {
+    if (_authenticationStatus !== 'verifying new password') {
+      return router.back();
+    }
+  }, [_authenticationStatus, router]);
+
   return (
-    <div className="itens-center flex h-screen justify-center">
-      <Card className="w-3/4 rounded-none border-none shadow-none">
-        <form onSubmit={confirmForgotPassword}>
-          <Input
-            onChange={(e) => handleInputChange(e, /\d{6}/)}
-            type="text"
-            name="code"
-            placeholder="Verification code xxxxxx"
-            maxLength={6}
-            required
-          />
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
-          <Input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm password"
-            required
-          />
-          <Button
-            type="submit"
-            className="w-full"
+    <div className="flex h-screen items-center justify-center">
+      <Card className="w-3/4">
+        <CardHeader>
+          <CardTitle>Verify new password</CardTitle>
+          <CardDescription>
+            The verification code has been sent into your email.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={confirmForgotPassword}
+            className="flex flex-col gap-2"
           >
-            Submit code
-          </Button>
-        </form>
+            <OTP />
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <Input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm password"
+              required
+            />
+            <Button type="submit" className="w-full">
+              Submit new password
+            </Button>
+          </form>
+        </CardContent>
       </Card>
     </div>
   );

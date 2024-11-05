@@ -112,7 +112,7 @@ export default function AreaChart(props: AreaChartProps) {
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
               <p className="flex gap-1 capitalize">
-                {specialization.replace(/_/, ' ').toLocaleLowerCase()}
+                {specialization.replace(/_/g, ' ').toLocaleLowerCase()}
                 <span>career chart</span>
               </p>
 

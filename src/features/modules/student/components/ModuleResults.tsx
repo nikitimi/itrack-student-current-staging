@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { SidebarMenuSkeleton } from '@/components/ui/sidebar';
 
+// TODO: Only show if the modules are completed.
 const ModuleResults = () => {
   const {
     isCertificateModuleCompleted,
