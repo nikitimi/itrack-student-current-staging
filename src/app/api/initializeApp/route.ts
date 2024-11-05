@@ -16,7 +16,6 @@ export async function GET() {
       specialization: 'BUSINESS_ANALYTICS',
       studentType: 'regular',
       studentNumber: EMPTY_STRING,
-      userId: null,
       chartData: [],
     },
     errorMessage: [],

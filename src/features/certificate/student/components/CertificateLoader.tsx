@@ -17,10 +17,10 @@ import useCertificateInputControl from '@/hooks/useCertificateInputControl';
 import { Certificate } from '@/lib/enums/certificate';
 import {
   certificateList,
-  certificateModuleCompleted,
   certificateRemove,
 } from '@/redux/reducers/certificateReducer';
 import { EMPTY_STRING } from '@/utils/constants';
+import disabledWriteInDB from '@/utils/disabledWriteInDB';
 import mime from '@/utils/mime';
 import { ChangeEvent, useEffect, useState } from 'react';
 
@@ -32,18 +32,20 @@ type CertificateFile = {
 
 /** Loads the certificates uploaded by the student from the database. */
 const CertificateLoader = () => {
+  // For Hydration.
   const [isCertificateLoaded, setCertificateState] = useState(false);
   const selector = useAppSelector((s) => s.certificate);
   const [state, setState] = useState<CertificateFile[]>([]);
   const _certificateList = certificateList(selector);
-  const isCertificateCompleted = certificateModuleCompleted(selector);
-  const { isInputDisabled } = useCertificateInputControl();
+  const { isInputDisabled, certificateInputControl } =
+    useCertificateInputControl();
 
   const dispatch = useAppDispatch();
   const invalidExtraCharactersRegex = /(%\d{1}\D{1})/g;
 
   function handleRemoveCertificate(certificate: Certificate) {
-    if (isCertificateCompleted) return alert('You cannot do that now.');
+    if (disabledWriteInDB.includes(certificateInputControl))
+      return alert('You cannot do that now.');
 
     const indexOfCertificate = state
       .flatMap((s) => s.certificate)
@@ -53,11 +55,16 @@ const CertificateLoader = () => {
       return alert(`Cannot remove the File of certificate: ${certificate}`);
     }
 
+    dispatch(certificateRemove(certificate));
+    let savePoint = false;
     setState((prevState) => {
-      prevState.splice(indexOfCertificate, 1);
+      if (!savePoint) {
+        const removedCertificate = prevState.splice(indexOfCertificate, 1);
+        console.log({ removedCertificate });
+        savePoint = true;
+      }
       return prevState;
     });
-    dispatch(certificateRemove(certificate));
   }
 
   function handleAddFile(
@@ -103,19 +110,21 @@ const CertificateLoader = () => {
           prevState.push({ certificate: lastPushCertificate });
           return prevState;
         }
-        console.log('Certificate already exists on the list.');
+        console.log('Certificate already exists on the list. line 107');
         return prevState;
       }),
     [_certificateList]
   );
-  // For hydration.
-  useEffect(() => setCertificateState(true), []);
 
+  // For Hydration.
+  useEffect(() => setCertificateState(true), []);
   if (!isCertificateLoaded) return <Loading />;
 
+  console.log(state);
+
   return (
-    <CardContent>
-      <Table className="relative w-full border p-2">
+    <CardContent className="my-auto h-96 overflow-y-auto">
+      <Table className="w-full border p-2">
         <TableHeader>
           <TableRow className="capitalize">
             <TableHead>certificate name</TableHead>
@@ -136,16 +145,16 @@ const CertificateLoader = () => {
                 </TableCell>
                 <TableCell>
                   <div
-                    className={`${isCertificateCompleted ? 'opacity-0' : 'flex'} justify-center gap-2`}
+                    className={`${disabledWriteInDB.includes(certificateInputControl) ? 'opacity-0' : 'opacity-100'} flex justify-center gap-2 duration-200 ease-in-out`}
                   >
                     <Input
                       type="file"
-                      disabled={isCertificateCompleted || isInputDisabled}
+                      disabled={isInputDisabled}
                       onChange={(e) => handleAddFile(e, certificate)}
                     />
                     <Button
                       variant="destructive"
-                      disabled={isCertificateCompleted || isInputDisabled}
+                      disabled={isInputDisabled}
                       onClick={() => handleRemoveCertificate(certificate)}
                     >
                       Remove

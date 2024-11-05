@@ -8,7 +8,6 @@ import certificateEnum, { type Certificate } from '@/lib/enums/certificate';
 import {
   certificateAdd,
   certificateList,
-  certificateModuleCompleted,
 } from '@/redux/reducers/certificateReducer';
 import { EMPTY_STRING } from '@/utils/constants';
 import {
@@ -26,20 +25,13 @@ const CertificateSelector = () => {
 
   const selector = useAppSelector((s) => s.certificate);
   const _certificateList = certificateList(selector);
-  const isCertificateCompleted = certificateModuleCompleted(selector);
-  const certificates = certificateEnum.options.filter(
-    (c) => !_certificateList.includes(c)
-  );
-  const isCertificateOptionEmpty = certificates.length === 0;
+  const isCertificateOptionEmpty =
+    _certificateList.length === certificateEnum.options.length;
   const [isCertificateLoaded, setCertificateLoad] = useState(false);
   const dispatch = useAppDispatch();
   const [selectState, setSelectState] = useState<string>('');
   const { isInputDisabled } = useCertificateInputControl();
-  const condition =
-    isCertificateOptionEmpty || isCertificateCompleted || isInputDisabled;
-
-  // The server response is false, false while the client response is false, true.
-  console.log(isCertificateOptionEmpty, isCertificateCompleted);
+  const condition = isCertificateOptionEmpty || isInputDisabled;
 
   function handleClick() {
     try {
@@ -60,7 +52,7 @@ const CertificateSelector = () => {
   return (
     <CardHeader>
       <CardTitle>Certificate Selector</CardTitle>
-      <div className="grid grid-flow-col gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {isCertificateLoaded ? (
           <Select
             value={selectState}
@@ -72,22 +64,24 @@ const CertificateSelector = () => {
               <SelectValue placeholder="Certificate" />
             </SelectTrigger>
             <SelectContent>
-              {certificates.map((certificate) => {
-                const formattedCertificate = certificate.replace(
-                  allUnderscoreRegExp,
-                  ' '
-                );
+              {certificateEnum.options
+                .filter((c) => !_certificateList.includes(c))
+                .map((certificate) => {
+                  const formattedCertificate = certificate.replace(
+                    allUnderscoreRegExp,
+                    ' '
+                  );
 
-                return (
-                  <SelectItem
-                    key={certificate}
-                    value={certificate}
-                    className="text-black"
-                  >
-                    {formattedCertificate}
-                  </SelectItem>
-                );
-              })}
+                  return (
+                    <SelectItem
+                      key={certificate}
+                      value={certificate}
+                      className="text-black"
+                    >
+                      {formattedCertificate}
+                    </SelectItem>
+                  );
+                })}
             </SelectContent>
           </Select>
         ) : (

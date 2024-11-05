@@ -3,41 +3,25 @@
 import type { CertificateResult } from '@/utils/types/certificateResult';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import {
-  certificateList,
-  certificateModuleCompleted,
-  certificateModuleStateUpdate,
-} from '@/redux/reducers/certificateReducer';
+import { certificateList } from '@/redux/reducers/certificateReducer';
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import fetchHelper from '@/utils/fetch';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  certificateModuleInputControl,
-  inputControlSetPromptType,
-} from '@/redux/reducers/inputControlReducer';
+import { inputControlSetPromptType } from '@/redux/reducers/inputControlReducer';
 import { PromptType } from '@/lib/enums/prompType';
 import useCertificateInputControl from '@/hooks/useCertificateInputControl';
+import Prompt from '@/components/Prompt';
+import disabledWriteInDB from '@/utils/disabledWriteInDB';
 
 const CertificateConfirmation = () => {
-  const selector = useAppSelector((s) => s.certificate);
-  const _certificateList = certificateList(selector);
-  const isCertificateCompleted = certificateModuleCompleted(selector);
-
-  const dispatch = useAppDispatch();
-  const inputControlSelector = useAppSelector((s) => s.inputControl);
-  const certificateInputControl =
-    certificateModuleInputControl(inputControlSelector);
+  const certificateSelector = useAppSelector((s) => s.certificate);
+  const _certificateList = certificateList(certificateSelector);
   const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
-  const { isInputDisabled } = useCertificateInputControl();
+  const { isInputDisabled, certificateInputControl } =
+    useCertificateInputControl();
+  const dispatch = useAppDispatch();
 
   function handleInputControl(prompType: PromptType) {
     dispatch(
@@ -49,15 +33,15 @@ const CertificateConfirmation = () => {
   }
 
   function handleSubmit() {
-    if (certificateInputControl === 'waiting') {
-      handleInputControl('show prompt');
+    if (certificateInputControl === 'no document') {
+      handleInputControl('showing prompt');
     }
   }
 
   async function handleConfirmCertificate() {
-    handleInputControl('confirmed');
+    handleInputControl('submitted');
 
-    if (isCertificateCompleted) {
+    if (disabledWriteInDB.includes(certificateInputControl)) {
       return alert("You've already uploaded your certificates.");
     }
     const result: Pick<CertificateResult, 'certificateList'> = {
@@ -78,40 +62,29 @@ const CertificateConfirmation = () => {
     if (!postingCertificate.ok) {
       return alert((responseBody as BaseAPIResponse<string>).errorMessage[0]);
     }
-    dispatch(certificateModuleStateUpdate(true));
+    dispatch(
+      inputControlSetPromptType({
+        key: 'certificateModule',
+        promptType: 'submitted',
+      })
+    );
   }
 
   return (
     <>
       <CardFooter className="relative z-10 grid">
-        <Button
-          onClick={handleSubmit}
-          disabled={isCertificateCompleted || isInputDisabled}
-        >
-          Submit
-        </Button>
+        <Prompt
+          promptKey="certificateModule"
+          description={"Are you sure about the details you've provided?"}
+          title={'Certificate Confirmation'}
+          handleConfirmation={handleConfirmCertificate}
+          trigger={
+            <Button onClick={handleSubmit} disabled={isInputDisabled}>
+              Submit
+            </Button>
+          }
+        />
       </CardFooter>
-      <Card
-        className={`${certificateInputControl === 'show prompt' ? 'z-20 opacity-100' : 'z-0 opacity-0'} h-screen duration-200 ease-in-out`}
-      >
-        <CardHeader className="text-center">
-          <CardTitle>Certificate Confirmation</CardTitle>
-          <CardDescription>
-            Are you sure about the details you&apos;ve provided?
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center gap-2">
-          <Button className="bg-green-400" onClick={handleConfirmCertificate}>
-            Confirm
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => handleInputControl('waiting')}
-          >
-            Not yet
-          </Button>
-        </CardContent>
-      </Card>
     </>
   );
 };

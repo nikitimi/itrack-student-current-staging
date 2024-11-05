@@ -13,9 +13,9 @@ type SetPrompTypePayload = {
 };
 
 const initialState: InitialState = {
-  certificateModule: 'waiting',
-  gradeModule: 'waiting',
-  internshipModule: 'waiting',
+  certificateModule: 'fetching',
+  gradeModule: 'fetching',
+  internshipModule: 'fetching',
 };
 
 /** This is for managing the state in grade module of students. */

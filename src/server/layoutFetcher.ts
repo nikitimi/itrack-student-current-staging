@@ -18,7 +18,6 @@ export default async function layoutFetcher() {
   const headerList = headers();
 
   // TODO: Move this out to a separate global client component handler to set correct user type.
-  const userId = headerList.get(HEADER_KEY.uid) ?? null;
   const studentNumber =
     headerList.get(HEADER_KEY.studentNumber) ?? EMPTY_STRING;
   const firstName = headerList.get(HEADER_KEY.firstName) ?? EMPTY_STRING;
@@ -92,7 +91,6 @@ export default async function layoutFetcher() {
     specialization,
     studentType,
     studentNumber,
-    userId,
     chartData,
     ...result,
   };
