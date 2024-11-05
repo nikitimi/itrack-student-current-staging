@@ -167,5 +167,5 @@ export default function certificateResult(props: CertificateResult) {
   //     filteredRecommendedCertificatesByJob,
   //     finalComputation,
   //   };
-  return finalComputation;
+  return finalComputation as Record<PossibleJob, number>;
 }

@@ -12,7 +12,7 @@ import useAppRouter from '@/hooks/useAppRouter';
 
 const Header = () => {
   return (
-    <header className="w-full shadow-md">
+    <header className="fixed top-0 w-full bg-white/90 shadow-md">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50}>
           <SidebarTrigger />

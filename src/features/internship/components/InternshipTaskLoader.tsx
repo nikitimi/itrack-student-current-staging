@@ -16,19 +16,20 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import useInternshipInputControl from '@/hooks/useInternshipInputControl';
 import { type InternshipTask } from '@/lib/enums/internshipTask';
 import {
-  internshipModuleCompleted,
   internshipTaskRemove,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
 import { EMPTY_STRING } from '@/utils/constants';
+import disabledWriteInDB from '@/utils/disabledWriteInDB';
 
 const InternshipTaskLoader = () => {
   const selector = useAppSelector((s) => s.internship);
   const _internshipTasks = internshipTasks(selector);
-  const internshipModuleState = internshipModuleCompleted(selector);
-  const isInternshipModuleCompleted = internshipModuleState === true;
+  const { isInputDisabled, internshipInputControl } =
+    useInternshipInputControl();
   const dispatch = useAppDispatch();
   const nonAlphabetCharacters = /[()/]/g;
 
@@ -38,8 +39,9 @@ const InternshipTaskLoader = () => {
     ) as HTMLTableRowElement;
     const toggleClasses = ['hidden'] as const;
 
-    if (isInternshipModuleCompleted)
+    if (disabledWriteInDB.includes(internshipInputControl)) {
       return alert("You've already submitted your internship form.");
+    }
 
     tableRow.classList.toggle(...toggleClasses);
     dispatch(internshipTaskRemove(task));
@@ -50,7 +52,7 @@ const InternshipTaskLoader = () => {
       <CardHeader>
         <CardDescription>List of performed internship tasks</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-48 overflow-y-auto">
         <Table>
           <TableHeader>
             <TableRow className="text-center">
@@ -72,7 +74,7 @@ const InternshipTaskLoader = () => {
                   <TableCell>
                     <div className="flex flex-row justify-center gap-2 p-2">
                       <Button
-                        disabled={isInternshipModuleCompleted}
+                        disabled={isInputDisabled}
                         onClick={() => handleRemoveTask(task)}
                         variant="destructive"
                       >

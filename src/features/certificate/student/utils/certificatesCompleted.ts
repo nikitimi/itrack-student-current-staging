@@ -1,3 +1,3 @@
-const certificatesCompleted = 100;
+const certificatesCompleted = 2;
 
 export default certificatesCompleted;

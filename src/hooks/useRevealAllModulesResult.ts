@@ -30,7 +30,7 @@ const useRevealAllModulesResult = () => {
   });
   const renderInternshipResult = internshipResult({
     internshipResult: {
-      grade: typeof internshipGrade === 'string' ? 0 : internshipGrade,
+      grade: internshipGrade === 'initializing' ? '5.00' : internshipGrade,
       tasks: internshipTasks,
       isITCompany:
         typeof internshipCompanyQuestion === 'string'

@@ -13,6 +13,7 @@ import { gradeResetState } from '@/redux/reducers/gradeReducer';
 import { internshipResetState } from '@/redux/reducers/internshipReducer';
 import { studentInfoResetState } from '@/redux/reducers/studentInfoReducer';
 import { Button } from './ui/button';
+import { inputControlResetter } from '@/redux/reducers/inputControlReducer';
 
 const SignoutButton = () => {
   const clerk = useClerk();
@@ -27,6 +28,7 @@ const SignoutButton = () => {
       dispatch(gradeResetState());
       dispatch(internshipResetState());
       dispatch(studentInfoResetState());
+      dispatch(inputControlResetter());
       dispatch(authenticationSetStatus('no user'));
       router.replace('/student/signin');
     });

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-import useModuleInputController from '@/hooks/useModuleInputController';
 import useRevealAllModulesResult from '@/hooks/useRevealAllModulesResult';
 import {
   Table,
@@ -15,29 +14,25 @@ import {
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { SidebarMenuSkeleton } from '@/components/ui/sidebar';
 
+// TODO: Only show if the modules are completed.
 const ModuleResults = () => {
-  const {
-    isCertificateModuleCompleted,
-    isGradesModuleCompleted,
-    isInternshipModuleCompleted,
-  } = useModuleInputController();
   const { certificate, grades, internship, jobHolder } =
     useRevealAllModulesResult();
   const [state, setState] = useState(false);
   const results = [
     {
       title: 'certificate',
-      conditionToRender: isCertificateModuleCompleted,
+      conditionToRender: certificate.length > 0,
       objectArray: certificate,
     },
     {
       title: 'academic grades',
-      conditionToRender: isGradesModuleCompleted,
+      conditionToRender: grades !== undefined,
       objectArray: grades ?? [],
     },
     {
       title: 'internship',
-      conditionToRender: isInternshipModuleCompleted,
+      conditionToRender: internship.length > 0,
       objectArray: internship,
     },
     {

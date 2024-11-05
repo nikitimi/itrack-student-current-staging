@@ -2,7 +2,6 @@
 
 import { type FormEvent } from 'react';
 
-import { Input } from '@/components/ui/input';
 import { useSignUp } from '@clerk/nextjs';
 import {
   authenticationSetStatus,
@@ -18,9 +17,14 @@ import {
   studentTemporarySpecialization,
 } from '@/redux/reducers/studentTemporaryReducer';
 import type StudentCreation from '@/utils/types/studentCreation';
-import { Card, CardContent } from '@/components/ui/card';
-import handleInputChange from '@/utils/handleInputChange';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import OTP from '@/components/OTP';
 
 const VerifyEmail = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -82,22 +86,18 @@ const VerifyEmail = () => {
   }
 
   return (
-    <div className="itens-center flex h-screen justify-center">
-      <Card className="w-3/4 rounded-none border-none shadow-none">
+    <div className="flex h-screen items-center justify-center">
+      <Card className="w-3/4 p-4">
+        <CardDescription>
+          <CardTitle>Account Verification</CardTitle>
+          <CardDescription>
+            We&apos;ve sent verification code to the email you&apos;ve provided.
+          </CardDescription>
+        </CardDescription>
         <CardContent>
-          <form onSubmit={handleVerificationCode}>
-            <Input
-              name="code"
-              onChange={(e) => handleInputChange(e, /\d{6}/)}
-              placeholder="Verification code xxxxxx"
-              maxLength={6}
-              type="text"
-            />
-            <Button
-              // disabled={!isVerificationModalVisible}
-              type="submit"
-              className="w-full"
-            >
+          <form onSubmit={handleVerificationCode} className="grid gap-2">
+            <OTP />
+            <Button type="submit" className="w-full">
               Submit
             </Button>
           </form>

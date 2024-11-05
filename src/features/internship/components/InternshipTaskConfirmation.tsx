@@ -4,8 +4,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   internshipCompanyQuestion,
   internshipGrade,
-  internshipModuleCompleted,
-  internshipSetCompletion,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
 import type { InternshipResult } from '@/utils/types/internshipResult';
@@ -16,6 +14,10 @@ import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { InternshipTask } from '@/lib/enums/internshipTask';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import useInternshipInputControl from '@/hooks/useInternshipInputControl';
+import disabledWriteInDB from '@/utils/disabledWriteInDB';
+import { inputControlSetPromptType } from '@/redux/reducers/inputControlReducer';
+import Prompt from '@/components/Prompt';
 
 const InternshipTaskConfirmation = () => {
   const [isTaskAlertPrompted, setTaskAlertPromp] = useState(false);
@@ -24,15 +26,22 @@ const InternshipTaskConfirmation = () => {
   const _internshipCompanyQuestion = internshipCompanyQuestion(selector);
   const _internshipGrade = internshipGrade(selector);
   const _internshipTasks = internshipTasks(selector);
-  const _internshipModuleCompleted = internshipModuleCompleted(selector);
-  const isInternshipModuleCompleted = _internshipModuleCompleted === true;
+  const { isInputDisabled, internshipInputControl } =
+    useInternshipInputControl();
   const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
 
   async function handleInternshipSubmit() {
+    dispatch(
+      inputControlSetPromptType({
+        key: 'internshipModule',
+        promptType: 'fetching',
+      })
+    );
     try {
-      if (isInternshipModuleCompleted)
+      if (disabledWriteInDB.includes(internshipInputControl)) {
         throw new Error("You've already submitted your internship details.");
-
+      }
+      // Check if already submitted  document.
       const getInternship = await fetchHelper('/api/mongo/internship', 'GET', {
         studentNumber,
       });
@@ -44,10 +53,14 @@ const InternshipTaskConfirmation = () => {
         throw new Error("You've already posted your internship details.");
       }
 
-      if (_internshipCompanyQuestion === 'initializing')
-        throw new Error('You forgot to answer IT Company?');
-      if (_internshipGrade === 'initializing')
+      if (_internshipCompanyQuestion === 'initializing') {
+        throw new Error(
+          'You forgot to answer whether your internship is from a IT Company or not.'
+        );
+      }
+      if (_internshipGrade === 'initializing') {
         throw new Error('You forgot to input your internship grade.');
+      }
       if (_internshipTasks.length === 0 && !isTaskAlertPrompted) {
         setTaskAlertPromp(true);
         throw new Error(
@@ -65,28 +78,42 @@ const InternshipTaskConfirmation = () => {
         ...result,
         studentNumber,
       });
+      const json = (await response.json()) as BaseAPIResponse<string>;
 
-      if (!response.ok) {
-        const { errorMessage } =
-          (await response.json()) as BaseAPIResponse<string>;
-        throw new Error(errorMessage[0]);
-      }
-      dispatch(internshipSetCompletion(true));
+      if (!response.ok) throw new Error(json.errorMessage[0]);
+
+      dispatch(
+        inputControlSetPromptType({
+          key: 'internshipModule',
+          promptType: 'submitted',
+        })
+      );
     } catch (e) {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'internshipModule',
+          promptType: 'no document',
+        })
+      );
       const error = e as Error;
       alert(error.message);
     }
   }
 
   return (
-    <Card className="grid rounded-none border-none bg-transparent p-2 shadow-none">
-      <Button
-        disabled={isInternshipModuleCompleted}
-        onClick={handleInternshipSubmit}
-      >
-        Submit internship details
-      </Button>
-    </Card>
+    <Prompt
+      description={
+        "Are you sure you've entered all the details during your internship?"
+      }
+      promptKey={'certificateModule'}
+      title={'Internship Details Confirmation'}
+      trigger={
+        <Card className="grid rounded-none border-none bg-transparent p-2 shadow-none">
+          <Button disabled={isInputDisabled}>Submit internship details</Button>
+        </Card>
+      }
+      handleConfirmation={handleInternshipSubmit}
+    />
   );
 };
 

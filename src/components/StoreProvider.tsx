@@ -17,7 +17,6 @@ import {
   authenticationSetUserID,
   authenticationSetUserType,
 } from '@/redux/reducers/authenticationReducer';
-import { certificateModuleStateUpdate } from '@/redux/reducers/certificateReducer';
 import { certificateAdd } from '@/redux/reducers/certificateReducer';
 import { gradesAdd } from '@/redux/reducers/gradeReducer';
 import store from '@/redux/store';
@@ -34,12 +33,12 @@ import { InternshipResult } from '@/utils/types/internshipResult';
 import {
   internshipCompanyQuestionUpdate,
   internshipGradeUpdate,
-  internshipSetCompletion,
   internshipTaskAdd,
 } from '@/redux/reducers/internshipReducer';
 import { ChartData } from '@/utils/types/chartData';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { useAuth } from '@clerk/nextjs';
+import { inputControlSetPromptType } from '@/redux/reducers/inputControlReducer';
 
 type LayoutFetcher = {
   userId: string | null;
@@ -73,11 +72,13 @@ const StoreInitializer = ({ children }: Children) => {
     });
     const json = (await response.json()) as BaseAPIResponse<LayoutFetcher>;
 
-    if (!response.ok || typeof userId !== 'string') {
-      dispatch(authenticationSetStatus('no user'));
+    if (!response.ok) {
       return json.errorMessage.forEach((errorMessage) =>
         console.log(errorMessage)
       );
+    }
+    if (typeof userId !== 'string') {
+      dispatch(authenticationSetStatus('no user'));
     }
 
     const {
@@ -91,13 +92,33 @@ const StoreInitializer = ({ children }: Children) => {
       studentType,
       lastName,
       firstName,
-      ...rest
     } = json.data;
 
+    dispatch(authenticationSetUserID(userId ?? EMPTY_STRING));
+    dispatch(authenticationSetStatus('authenticated'));
+    dispatch(authenticationSetUserType(role));
+    dispatch(studentInfoSetNumber(studentNumber));
+    dispatch(studentInfoSetSpecialization(specialization));
+    dispatch(studentInfoSetFirstname(firstName));
+    dispatch(studentInfoSetLastname(lastName));
+    dispatch(studentInfoSetType(studentType));
+
     if (certificate.length > 0) {
-      dispatch(certificateModuleStateUpdate(true));
       certificate.forEach((certificate) =>
         dispatch(certificateAdd(certificate))
+      );
+      dispatch(
+        inputControlSetPromptType({
+          key: 'certificateModule',
+          promptType: 'fetched from server',
+        })
+      );
+    } else {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'certificateModule',
+          promptType: 'no document',
+        })
       );
     }
 
@@ -108,19 +129,23 @@ const StoreInitializer = ({ children }: Children) => {
       tasks.forEach((task) => {
         dispatch(internshipTaskAdd(task));
       });
-      dispatch(internshipSetCompletion(true));
+      dispatch(
+        inputControlSetPromptType({
+          key: 'internshipModule',
+          promptType: 'fetched from server',
+        })
+      );
+    } else {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'internshipModule',
+          promptType: 'no document',
+        })
+      );
     }
 
     grades.forEach((gradeInfo) => dispatch(gradesAdd(gradeInfo)));
     chartData.forEach((c) => dispatch(studentInfoSetChartData(c)));
-    dispatch(studentInfoSetFirstname(firstName));
-    dispatch(studentInfoSetLastname(lastName));
-    dispatch(studentInfoSetSpecialization(specialization));
-    dispatch(studentInfoSetType(studentType));
-    dispatch(studentInfoSetNumber(studentNumber));
-    dispatch(authenticationSetUserType(role));
-    dispatch(authenticationSetUserID(rest.userId ?? EMPTY_STRING));
-    dispatch(authenticationSetStatus('authenticated'));
   }, [dispatch, userId]);
 
   useEffect(() => void fetchLayoutHelper(), [fetchLayoutHelper]);
