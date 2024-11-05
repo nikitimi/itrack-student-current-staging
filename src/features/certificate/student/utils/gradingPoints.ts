@@ -1,8 +1,8 @@
 const gradingPoints = {
   // A: 14,
-  A: 1000,
+  A: 50,
   // B: 6,
-  B: 50,
+  B: 3,
   // C: 1,
   C: 1,
 };

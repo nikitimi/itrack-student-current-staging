@@ -22,17 +22,17 @@ const ModuleResults = () => {
   const results = [
     {
       title: 'certificate',
-      conditionToRender: false,
+      conditionToRender: certificate.length > 0,
       objectArray: certificate,
     },
     {
       title: 'academic grades',
-      conditionToRender: false,
+      conditionToRender: grades !== undefined,
       objectArray: grades ?? [],
     },
     {
       title: 'internship',
-      conditionToRender: false,
+      conditionToRender: internship.length > 0,
       objectArray: internship,
     },
     {

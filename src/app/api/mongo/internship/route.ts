@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       _id: EMPTY_STRING,
       tasks: [],
       isITCompany: false,
-      grade: 0,
+      grade: '5.00',
       studentNumber: EMPTY_STRING,
       dateCreated: WRONG_NUMBER,
       dateModified: WRONG_NUMBER,

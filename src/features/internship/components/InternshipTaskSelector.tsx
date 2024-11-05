@@ -29,6 +29,9 @@ const InternshipTaskSelector = () => {
   const selector = useAppSelector((s) => s.internship);
   const _internshipTasks = internshipTasks(selector);
   const { isInputDisabled } = useInternshipInputControl();
+  const condition =
+    isInputDisabled ||
+    _internshipTasks.length === internshipTaskEnum.options.length;
 
   function handleTaskAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,6 +42,8 @@ const InternshipTaskSelector = () => {
       if (_internshipTasks.includes(selectedTask)) {
         throw new Error(`${selectedTask.replace(/_/g, ' ')} already exists`);
       }
+
+      if (!internshipTaskEnum.options.includes(selectedTask)) return;
 
       dispatch(internshipTaskAdd(selectedTask));
     } catch (e) {
@@ -54,7 +59,7 @@ const InternshipTaskSelector = () => {
           <CardDescription>Internship Task Selector</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-2">
-          <Select name="selectedTask" disabled={isInputDisabled}>
+          <Select name="selectedTask" disabled={condition}>
             <SelectTrigger>
               <SelectValue placeholder="Internship Tasks" />
             </SelectTrigger>
@@ -71,7 +76,7 @@ const InternshipTaskSelector = () => {
                 })}
             </SelectContent>
           </Select>
-          <Button variant="outline" type="submit" disabled={isInputDisabled}>
+          <Button variant="outline" type="submit" disabled={condition}>
             Add Task
           </Button>
         </CardContent>
