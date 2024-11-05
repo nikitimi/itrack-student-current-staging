@@ -1,8 +1,8 @@
 'use client';
 
 import AreaChart from '@/components/AreaChart';
-import AuthenticationHelper from '@/components/AuthenticationHelper';
 import Header from '@/components/Header';
+import Hero from '@/components/Hero';
 import { useAppSelector } from '@/hooks/redux';
 import { studentInfoChartData } from '@/redux/reducers/studentInfoReducer';
 
@@ -28,7 +28,7 @@ const Dashboard = () => {
     <>
       <Header />
       <div className="flex flex-col gap-4 py-4">
-        <AuthenticationHelper />
+        <Hero />
         <AreaChart chartData={chartData} chartConfig={chartConfig} />
       </div>
     </>

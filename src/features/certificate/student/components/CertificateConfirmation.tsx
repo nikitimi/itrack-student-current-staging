@@ -2,8 +2,6 @@
 
 import type { CertificateResult } from '@/utils/types/certificateResult';
 
-import { useState } from 'react';
-
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   certificateList,
@@ -13,76 +11,108 @@ import {
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import fetchHelper from '@/utils/fetch';
-import { CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
-type InitialState = {
-  status: 'empty certificate not triggered' | 'empty certificate triggered';
-};
-
-const initialState: InitialState = {
-  status: 'empty certificate not triggered',
-};
+import {
+  certificateModuleInputControl,
+  inputControlSetPromptType,
+} from '@/redux/reducers/inputControlReducer';
+import { PromptType } from '@/lib/enums/prompType';
+import useCertificateInputControl from '@/hooks/useCertificateInputControl';
 
 const CertificateConfirmation = () => {
-  const [state, setState] = useState(initialState);
   const selector = useAppSelector((s) => s.certificate);
   const _certificateList = certificateList(selector);
   const isCertificateCompleted = certificateModuleCompleted(selector);
 
   const dispatch = useAppDispatch();
+  const inputControlSelector = useAppSelector((s) => s.inputControl);
+  const certificateInputControl =
+    certificateModuleInputControl(inputControlSelector);
   const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
-  const isCertificateListEmpty = _certificateList.length === 0;
+  const { isInputDisabled } = useCertificateInputControl();
 
-  async function handleSubmit() {
-    try {
-      if (isCertificateCompleted)
-        throw new Error("You've already uploaded your certificates.");
+  function handleInputControl(prompType: PromptType) {
+    dispatch(
+      inputControlSetPromptType({
+        key: 'certificateModule',
+        promptType: prompType,
+      })
+    );
+  }
 
-      if (
-        isCertificateListEmpty &&
-        state.status === 'empty certificate not triggered'
-      )
-        throw new Error("Are you sure you didn't take any certificates?");
-
-      const result: Pick<CertificateResult, 'certificateList'> = {
-        certificateList: _certificateList,
-      };
-
-      // Posting to database.
-      const postingCertificate = await fetchHelper(
-        '/api/mongo/certificate',
-        'POST',
-        {
-          ...result,
-          studentNumber,
-        }
-      );
-
-      const responseBody = await postingCertificate.json();
-
-      if (!postingCertificate.ok) {
-        throw new Error(
-          (responseBody as BaseAPIResponse<string>).errorMessage[0]
-        );
-      }
-
-      dispatch(certificateModuleStateUpdate(true));
-    } catch (e) {
-      setState((prevState) => ({
-        ...prevState,
-        status: 'empty certificate triggered',
-      }));
-      const error = e as Error;
-      alert(error.message);
+  function handleSubmit() {
+    if (certificateInputControl === 'waiting') {
+      handleInputControl('show prompt');
     }
   }
+
+  async function handleConfirmCertificate() {
+    handleInputControl('confirmed');
+
+    if (isCertificateCompleted) {
+      return alert("You've already uploaded your certificates.");
+    }
+    const result: Pick<CertificateResult, 'certificateList'> = {
+      certificateList: _certificateList,
+    };
+
+    // Posting to database.
+    const postingCertificate = await fetchHelper(
+      '/api/mongo/certificate',
+      'POST',
+      {
+        ...result,
+        studentNumber,
+      }
+    );
+
+    const responseBody = await postingCertificate.json();
+    if (!postingCertificate.ok) {
+      return alert((responseBody as BaseAPIResponse<string>).errorMessage[0]);
+    }
+    dispatch(certificateModuleStateUpdate(true));
+  }
+
   return (
-    <CardFooter className="grid">
-      <Button onClick={handleSubmit} disabled={isCertificateCompleted}>
-        Submit
-      </Button>
-    </CardFooter>
+    <>
+      <CardFooter className="relative z-10 grid">
+        <Button
+          onClick={handleSubmit}
+          disabled={isCertificateCompleted || isInputDisabled}
+        >
+          Submit
+        </Button>
+      </CardFooter>
+      <Card
+        className={`${certificateInputControl === 'show prompt' ? 'z-20 opacity-100' : 'z-0 opacity-0'} h-screen duration-200 ease-in-out`}
+      >
+        <CardHeader className="text-center">
+          <CardTitle>Certificate Confirmation</CardTitle>
+          <CardDescription>
+            Are you sure about the details you&apos;ve provided?
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center gap-2">
+          <Button className="bg-green-400" onClick={handleConfirmCertificate}>
+            Confirm
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => handleInputControl('waiting')}
+          >
+            Not yet
+          </Button>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 

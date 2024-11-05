@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useEffect, useState } from 'react';
+import useCertificateInputControl from '@/hooks/useCertificateInputControl';
 
 /** The uploader of certificates to the database. */
 const CertificateSelector = () => {
@@ -30,10 +31,12 @@ const CertificateSelector = () => {
     (c) => !_certificateList.includes(c)
   );
   const isCertificateOptionEmpty = certificates.length === 0;
-  const isInputDisabled = isCertificateOptionEmpty || isCertificateCompleted;
   const [isCertificateLoaded, setCertificateLoad] = useState(false);
   const dispatch = useAppDispatch();
   const [selectState, setSelectState] = useState<string>('');
+  const { isInputDisabled } = useCertificateInputControl();
+  const condition =
+    isCertificateOptionEmpty || isCertificateCompleted || isInputDisabled;
 
   // The server response is false, false while the client response is false, true.
   console.log(isCertificateOptionEmpty, isCertificateCompleted);
@@ -62,7 +65,7 @@ const CertificateSelector = () => {
           <Select
             value={selectState}
             onValueChange={(v) => setSelectState(v)}
-            disabled={isInputDisabled}
+            disabled={condition}
             name="certificate"
           >
             <SelectTrigger>
@@ -112,7 +115,7 @@ const CertificateSelector = () => {
             </SelectContent>
           </Select>
         )}
-        <Button disabled={isInputDisabled} onClick={handleClick}>
+        <Button disabled={condition} onClick={handleClick}>
           Add Certificate
         </Button>
       </div>

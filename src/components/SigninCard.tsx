@@ -43,12 +43,26 @@ const SigninCard = () => {
             dispatch(authenticationSetStatus('authenticated'));
             router.replace('/student');
           });
-        default:
-          throw new Error(`${result.status}`);
       }
     } catch (e) {
       const error = e as Error;
-      alert(error.message);
+      console.log(error.message);
+
+      console.log(signIn);
+      if (isLoaded) {
+        switch (signIn.status) {
+          case 'needs_first_factor':
+            return alert(
+              'Ongoing password verification failed\nPlease forgot your password again then complete the process.'
+            );
+          case 'needs_identifier':
+            return alert("Account doesn't exists.");
+          case null:
+            return alert('');
+          default:
+            alert(signIn.status);
+        }
+      }
     }
   }
 
