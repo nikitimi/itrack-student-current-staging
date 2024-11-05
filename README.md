@@ -1,3 +1,38 @@
+# Installation:
+
+- Download [NodeJS](https://nodejs.org/en).
+  ![node](/public/node.jpg)
+- Run the following command in Powershell [Run as Admin]:
+
+```powershell
+  corepack enable pnpm
+```
+
+then run:
+
+```powershell
+  corepack use pnpm@latest
+```
+
+- After installing `NodeJS` and the `pnpm`:, open this project in VS Code:
+  ![vscode](/public/vscode.jpg)
+
+- Open the terminal by pressing `CTRL` + `.
+- ` is located below escape key.
+- Install the package by typing:
+
+```cmd
+  pnpm install
+```
+
+- Run the application in development mode:
+
+```
+  pnpm run dev
+```
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ---
