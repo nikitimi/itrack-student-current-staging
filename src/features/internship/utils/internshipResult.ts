@@ -14,6 +14,8 @@ import serviceManagementProgramJobEnum, {
 import webAndMobileDevelopmentJobEnum, {
   type WebAndMobileDevelopmentJob,
 } from '@/lib/enums/jobs/webAndMobileDevelopment';
+//eslint-disable-next-line boundaries/element-types
+import gradeSystem from '@/features/grade/student/utils/gradeSystem';
 
 type PossibleJob =
   | BusinessAnalyticJob
@@ -125,13 +127,22 @@ export default function internshipResult(props: InternshipResultProps) {
   }
 
   // FINAL CALCULATION HERE...
+  const indexOfScaledGrade = gradeSystem
+    .flatMap((g) => g.scale as string)
+    .indexOf(internshipResult.grade);
+
+  if (indexOfScaledGrade === -1)
+    console.log(
+      `Scale ${internshipResult.grade} doesn't exists in the grade system.`
+    );
 
   const getOneThird = 0.0001;
   const thirtyThreeDecimal = parseInt(gradeDivision, 10) * getOneThird;
   /** Grade whether the company is IT Company or not. */
   const questionGrade = isITCompanyGrade * thirtyThreeDecimal;
   /** Grade given by supervisor. */
-  const internGrade = internshipResult.grade * thirtyThreeDecimal;
+  const internGrade =
+    gradeSystem[indexOfScaledGrade]['scale2'] * thirtyThreeDecimal;
   /** Grade calculated based on the task performed by the student. */
   const finalTasksGrade = tasksGrade * thirtyThreeDecimal;
   const finalGrade = questionGrade + internGrade + finalTasksGrade;

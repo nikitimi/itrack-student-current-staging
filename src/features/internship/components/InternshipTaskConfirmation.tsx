@@ -58,7 +58,7 @@ const InternshipTaskConfirmation = () => {
           'You forgot to answer whether your internship is from a IT Company or not.'
         );
       }
-      if (typeof _internshipGrade !== 'number') {
+      if (_internshipGrade === 'initializing') {
         throw new Error('You forgot to input your internship grade.');
       }
       if (_internshipTasks.length === 0 && !isTaskAlertPrompted) {

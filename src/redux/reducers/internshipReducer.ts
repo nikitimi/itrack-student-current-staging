@@ -7,7 +7,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 type InitialState = {
   internshipCompanyQuestion: boolean | InitializingState;
-  internshipGrade: number | InitializingState;
+  internshipGrade: string;
   internshipTasks: InternshipTask[];
 };
 const initialState: InitialState = {
