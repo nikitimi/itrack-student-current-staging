@@ -1,4 +1,4 @@
-import type { PromptType } from '@/lib/enums/prompType';
+import type { PromptType } from '@/lib/enums/promptType';
 import type { ModuleList } from '@/lib/schema/moduleList';
 import type { RootState } from '@/redux/store';
 

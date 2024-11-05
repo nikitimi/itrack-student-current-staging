@@ -10,7 +10,7 @@ import fetchHelper from '@/utils/fetch';
 import { CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { inputControlSetPromptType } from '@/redux/reducers/inputControlReducer';
-import { PromptType } from '@/lib/enums/prompType';
+import { PromptType } from '@/lib/enums/promptType';
 import useCertificateInputControl from '@/hooks/useCertificateInputControl';
 import Prompt from '@/components/Prompt';
 import disabledWriteInDB from '@/utils/disabledWriteInDB';

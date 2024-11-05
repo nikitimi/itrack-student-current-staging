@@ -1,7 +1,7 @@
 /** For Input Controller */
 
 import { z } from 'zod';
-import promptTypeEnum from '../enums/prompType';
+import promptTypeEnum from '../enums/promptType';
 
 export type ModuleList = z.infer<typeof moduleListSchema>;
 

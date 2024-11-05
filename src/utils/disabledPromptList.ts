@@ -1,4 +1,4 @@
-import type { PromptType } from '@/lib/enums/prompType';
+import type { PromptType } from '@/lib/enums/promptType';
 
 const disabledPromptList: PromptType[] = [
   'fetched from server',
