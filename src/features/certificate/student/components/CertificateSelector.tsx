@@ -17,9 +17,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useEffect, useState } from 'react';
-import useCertificateInputControl from '@/hooks/useCertificateInputControl';
 import { authenticationStatus } from '@/redux/reducers/authenticationReducer';
 import disabledNoUserList from '@/utils/authentication/disabledNoUserList';
+import constantNameFormatter from '../../../../utils/constantNameFormatter';
 
 /** The uploader of certificates to the database. */
 const CertificateSelector = () => {
@@ -34,11 +34,8 @@ const CertificateSelector = () => {
   const [isCertificateLoaded, setCertificateLoad] = useState(false);
   const dispatch = useAppDispatch();
   const [selectState, setSelectState] = useState<string>('');
-  const { isInputDisabled } = useCertificateInputControl();
   const condition =
-    isCertificateOptionEmpty ||
-    isInputDisabled ||
-    disabledNoUserList.includes(authStatus);
+    isCertificateOptionEmpty || disabledNoUserList.includes(authStatus);
 
   function handleClick() {
     try {
@@ -58,7 +55,7 @@ const CertificateSelector = () => {
 
   return (
     <CardHeader>
-      <CardTitle>Certificate Selector</CardTitle>
+      <CardTitle>Select certificate type.</CardTitle>
       <div className="grid grid-cols-2 gap-2">
         {isCertificateLoaded ? (
           <Select
@@ -74,18 +71,13 @@ const CertificateSelector = () => {
               {certificateEnum.options
                 .filter((c) => !_certificateList.includes(c))
                 .map((certificate) => {
-                  const formattedCertificate = certificate.replace(
-                    allUnderscoreRegExp,
-                    ' '
-                  );
-
                   return (
                     <SelectItem
                       key={certificate}
                       value={certificate}
-                      className="text-black"
+                      className="capitalize text-black"
                     >
-                      {formattedCertificate}
+                      {constantNameFormatter(certificate)}
                     </SelectItem>
                   );
                 })}
