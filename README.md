@@ -1,7 +1,7 @@
 # Installation:
 
 - Download [NodeJS](https://nodejs.org/en).
-  ![node](/public/node.jpg)
+  ![node](/docs/node.jpg)
 - Run the following command in Powershell [Run as Admin]:
 
 ```powershell
@@ -15,7 +15,7 @@ then run:
 ```
 
 - After installing `NodeJS` and the `pnpm`:, open this project in VS Code:
-  ![vscode](/public/vscode.jpg)
+  ![vscode](/docs/vscode.jpg)
 
 - Open the terminal by pressing `CTRL` + `.
 - ` is located below escape key.
@@ -37,7 +37,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ---
 
-TODO:
+# TODO:
 
 - Disable interactivity when authenticating.
 - Admin and Student logs.
@@ -69,6 +69,9 @@ These 3 modules will have a breakdown of the Jobs well suited for the students.
 
 ---
 
-Issues:
+# Issues:
 
+- Grades of the students in admin stacks, need to bring back `studentNumber` in the mapping of objects.
+- AuthenticatedRoutes are still accessible when logged out excluding the student dashboard.
+- ~~Bugs in the certificate calculation due to the inconsistent naming of specialization.~~ _(Fixed by renaming specialization in `/src/lib/certificates.ts` aligning with specialization enum.)_
 - ~~TypeError: Promise.withResolvers is not a function in react-pdftotext that is using [react-pdf](https://github.com/mozilla/pdf.js), here the [solutions](https://stackoverflow.com/questions/78415681/pdf-js-pdfjs-dist-promise-withresolvers-is-not-a-function), **TLDR**: _this is due to NodeJS < v22_.~~ _(Resolved with [`pdf2json`](https://github.com/modesty/pdf2json) package.)_

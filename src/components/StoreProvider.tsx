@@ -14,7 +14,6 @@ import { Provider } from 'react-redux';
 import { useAppDispatch } from '@/hooks/redux';
 import {
   authenticationSetStatus,
-  authenticationSetUserID,
   authenticationSetUserType,
 } from '@/redux/reducers/authenticationReducer';
 import { certificateAdd } from '@/redux/reducers/certificateReducer';
@@ -26,9 +25,8 @@ import {
   studentInfoSetLastname,
   studentInfoSetNumber,
   studentInfoSetSpecialization,
-  studentInfoSetType,
 } from '@/redux/reducers/studentInfoReducer';
-import { EMPTY_STRING } from '@/utils/constants';
+import { NUMBER_OF_SEMESTER } from '@/utils/constants';
 import { InternshipResult } from '@/utils/types/internshipResult';
 import {
   internshipCompanyQuestionUpdate,
@@ -66,6 +64,8 @@ const StoreInitializer = ({ children }: Children) => {
   const dispatch = useAppDispatch();
   const { userId } = useAuth();
 
+  console.log({ userId });
+
   const fetchLayoutHelper = useCallback(async () => {
     const response = await fetch('/api/initializeApp', {
       method: 'GET',
@@ -79,6 +79,8 @@ const StoreInitializer = ({ children }: Children) => {
     }
     if (typeof userId !== 'string') {
       dispatch(authenticationSetStatus('no user'));
+    } else {
+      dispatch(authenticationSetStatus('authenticated'));
     }
 
     const {
@@ -89,19 +91,15 @@ const StoreInitializer = ({ children }: Children) => {
       role,
       specialization,
       studentNumber,
-      studentType,
       lastName,
       firstName,
     } = json.data;
 
-    dispatch(authenticationSetUserID(userId ?? EMPTY_STRING));
-    dispatch(authenticationSetStatus('authenticated'));
     dispatch(authenticationSetUserType(role));
     dispatch(studentInfoSetNumber(studentNumber));
     dispatch(studentInfoSetSpecialization(specialization));
     dispatch(studentInfoSetFirstname(firstName));
     dispatch(studentInfoSetLastname(lastName));
-    dispatch(studentInfoSetType(studentType));
 
     if (certificate.length > 0) {
       certificate.forEach((certificate) =>
@@ -140,6 +138,29 @@ const StoreInitializer = ({ children }: Children) => {
         inputControlSetPromptType({
           key: 'internshipModule',
           promptType: 'no document',
+        })
+      );
+    }
+
+    if (grades.length === NUMBER_OF_SEMESTER) {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'gradeModule',
+          promptType: 'fetched from server',
+        })
+      );
+    } else if (grades.length === 0) {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'gradeModule',
+          promptType: 'no document',
+        })
+      );
+    } else {
+      dispatch(
+        inputControlSetPromptType({
+          key: 'gradeModule',
+          promptType: 'missing document',
         })
       );
     }

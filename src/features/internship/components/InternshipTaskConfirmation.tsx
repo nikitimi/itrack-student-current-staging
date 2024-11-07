@@ -12,12 +12,13 @@ import fetchHelper from '@/utils/fetch';
 import { studentInfoNumber } from '@/redux/reducers/studentInfoReducer';
 import { BaseAPIResponse } from '@/server/lib/schema/apiResponse';
 import { InternshipTask } from '@/lib/enums/internshipTask';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import useInternshipInputControl from '@/hooks/useInternshipInputControl';
 import disabledWriteInDB from '@/utils/disabledWriteInDB';
 import { inputControlSetPromptType } from '@/redux/reducers/inputControlReducer';
 import Prompt from '@/components/Prompt';
+import disabledNoUserList from '@/utils/authentication/disabledNoUserList';
+import { authenticationStatus } from '@/redux/reducers/authenticationReducer';
 
 const InternshipTaskConfirmation = () => {
   const [isTaskAlertPrompted, setTaskAlertPromp] = useState(false);
@@ -29,6 +30,9 @@ const InternshipTaskConfirmation = () => {
   const { isInputDisabled, internshipInputControl } =
     useInternshipInputControl();
   const studentNumber = studentInfoNumber(useAppSelector((s) => s.studentInfo));
+  const authStatus = authenticationStatus(
+    useAppSelector((s) => s.authentication)
+  );
 
   async function handleInternshipSubmit() {
     dispatch(
@@ -108,9 +112,12 @@ const InternshipTaskConfirmation = () => {
       promptKey={'certificateModule'}
       title={'Internship Details Confirmation'}
       trigger={
-        <Card className="grid rounded-none border-none bg-transparent p-2 shadow-none">
-          <Button disabled={isInputDisabled}>Submit internship details</Button>
-        </Card>
+        <Button
+          className="mx-2 w-full"
+          disabled={isInputDisabled || disabledNoUserList.includes(authStatus)}
+        >
+          Submit internship details
+        </Button>
       }
       handleConfirmation={handleInternshipSubmit}
     />

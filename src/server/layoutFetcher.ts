@@ -7,26 +7,27 @@ import gradeResult from '@/features/grade/student/utils/gradeResult';
 // eslint-disable-next-line boundaries/element-types
 import internshipResult from '@/features/internship/utils/internshipResult';
 import { Specialization } from '@/lib/enums/specialization';
-import { StudentType } from '@/lib/enums/studentType';
 import { UserRole } from '@/lib/enums/userRole';
 import { HEADER_KEY, EMPTY_STRING } from '@/utils/constants';
 import { ChartData } from '@/utils/types/chartData';
 import { headers } from 'next/headers';
 import getDatabaseInformations from './utils/getDatabaseInformations';
+import { clerkClient } from '@clerk/nextjs/server';
 
 export default async function layoutFetcher() {
   const headerList = headers();
+  const client = await clerkClient();
 
   // TODO: Move this out to a separate global client component handler to set correct user type.
   const studentNumber =
     headerList.get(HEADER_KEY.studentNumber) ?? EMPTY_STRING;
-  const firstName = headerList.get(HEADER_KEY.firstName) ?? EMPTY_STRING;
-  const lastName = headerList.get(HEADER_KEY.lastName) ?? EMPTY_STRING;
+  const userId = headerList.get(HEADER_KEY.uid) as string;
   const role = (headerList.get(HEADER_KEY.role) as UserRole) || 'anonymous';
-  const studentType = headerList.get(HEADER_KEY.studentType) as StudentType;
   const specialization = headerList.get(
     HEADER_KEY.specialization
   ) as Specialization;
+
+  const { firstName, lastName } = await client.users.getUser(userId);
 
   const result = await getDatabaseInformations(studentNumber);
   let internshipHolder: Record<string, number>[] = [];
@@ -80,7 +81,10 @@ export default async function layoutFetcher() {
       });
   }
 
-  calculateRecord(foo.certificate, 'certificate');
+  calculateRecord(
+    result.certificate.length === 0 ? [] : foo.certificate,
+    'certificate'
+  );
   calculateRecord(foo.grades ?? [], 'grades');
   calculateRecord(foo.internship, 'internship');
 
@@ -89,7 +93,6 @@ export default async function layoutFetcher() {
     firstName,
     lastName,
     specialization,
-    studentType,
     studentNumber,
     chartData,
     ...result,

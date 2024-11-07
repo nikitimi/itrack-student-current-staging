@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/chart';
 import ParentChart, { type ChartProps } from '@/components/charts/ParentChart';
 import useChartDataKeys from '@/hooks/useChartDataKeys';
+import chartTickFormatter from '@/utils/chartTickFormatter';
 
 export default function AreaChart(props: ChartProps) {
   const { chartConfig, chartData, ...rest } = props;
@@ -37,8 +38,8 @@ export default function AreaChart(props: ChartProps) {
             dataKey={chartKeys?.[0]}
             tickLine={false}
             axisLine={false}
-            tickMargin={8}
-            tickFormatter={(value) => value}
+            tickMargin={10}
+            tickFormatter={chartTickFormatter}
           />
           <YAxis
             tickLine={false}
