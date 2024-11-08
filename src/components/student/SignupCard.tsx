@@ -22,7 +22,7 @@ import {
   studentTemporarySetSpecialization,
 } from '@/redux/reducers/studentTemporaryReducer';
 import type StudentCreation from '@/utils/types/studentCreation';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -37,7 +37,7 @@ import handleInputChange, {
   errorClasses,
   validClasses,
 } from '@/utils/handleInputChange';
-import CORExtractor from './CORExtractor';
+import CORExtractor from '@/components/student/CORExtractor';
 import disabledWithUserList from '@/utils/authentication/disabledWithUserList';
 
 type InitialState = {
@@ -101,6 +101,10 @@ const SignupCard = () => {
       if (password !== confirmPassword) {
         throw new Error("Password doesn't match!");
       }
+
+      // if (password.length < PASSWORD_CHARACTERS) {
+      //   throw new Error(`Password must be ${PASSWORD_CHARACTERS} characters.`);
+      // }
 
       stylePasswordInputs();
       const response = await signUp.create({
@@ -190,7 +194,7 @@ const SignupCard = () => {
               required
               disabled={disabledWithUserList.includes(authStatus)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="capitalize">
                 <SelectValue placeholder="Specialization" />
               </SelectTrigger>
               <SelectContent>

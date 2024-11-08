@@ -1,6 +1,6 @@
 'use client';
 
-import { type ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '../ui/input';
+import { Input } from '@/components/ui/input';
 import fetchHelper from '@/utils/fetch';
 import { ExtractPDFDataCORResponse } from '@/server/lib/schema/apiResponse/extractPDFDataCOR';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
@@ -89,7 +89,7 @@ const CORExtractor = () => {
       <CardHeader>
         <CardTitle>COR Extractor</CardTitle>
         <CardDescription>
-          Please upload your COR for verification.
+          Upload a PDF file of your COR for verification.
         </CardDescription>
       </CardHeader>
       <CardContent>

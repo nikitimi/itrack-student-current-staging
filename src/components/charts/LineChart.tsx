@@ -23,7 +23,10 @@ import {
   internshipGrade,
   internshipTasks,
 } from '@/redux/reducers/internshipReducer';
-import ParentChart, { chartDataColor, ChartProps } from './ParentChart';
+import ParentChart, {
+  chartDataColor,
+  ChartProps,
+} from '@/components/charts/ParentChart';
 import { internshipModuleInputControl } from '@/redux/reducers/inputControlReducer';
 import disabledWriteInDB from '@/utils/disabledWriteInDB';
 import chartTickFormatter from '@/utils/chartTickFormatter';
@@ -67,7 +70,12 @@ export function LineChart(
     useAppSelector((s) => s.inputControl)
   );
 
-  if (!disabledWriteInDB.includes(inputControl)) return <></>;
+  if (!disabledWriteInDB.includes(inputControl))
+    return (
+      <ParentChart {...props}>
+        <></>
+      </ParentChart>
+    );
 
   const tasks = internshipTasks(internshipSelector);
   const isITCompany = internshipCompanyQuestion(internshipSelector);

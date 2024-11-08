@@ -8,9 +8,13 @@ import studentRoutesEnum, {
   StudentRoute,
 } from '@/lib/enums/routes/studentRoutes';
 import { EMPTY_STRING, ROUTE_DIVIDER } from '@/utils/constants';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
 import { LayoutDashboardIcon, LifeBuoyIcon, PieChartIcon } from 'lucide-react';
-import { Collapsible, CollapsibleContent } from './ui/collapsible';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 // eslint-disable-next-line boundaries/element-types
 import ModuleNav from '@/features/modules/student/components/ModuleNav';
 import getDynamicClasses from '@/utils/getDynamicClasses';
@@ -100,11 +104,11 @@ const Nav = () => {
           <Collapsible open className="group/collapsible" key={item.title}>
             <SidebarMenuItem>
               <SidebarMenuButton
-                className={dynamicClasses}
                 asChild
-                disabled={isAuthInitializing}
+                disabled={isModules}
+                className="hover:bg-transparent active:bg-transparent"
               >
-                <a href={item.url} className="flex">
+                <a className="flex">
                   <item.icon />
                   <span className="capitalize">{item.title}</span>
                 </a>
@@ -117,11 +121,11 @@ const Nav = () => {
         ) : (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
-              className={dynamicClasses}
               asChild
+              className={isAuthInitializing ? '' : dynamicClasses}
               disabled={isAuthInitializing}
             >
-              <a href={item.url}>
+              <a href={isAuthInitializing ? '/student' : item.url}>
                 <item.icon />
                 <span className="capitalize">{item.title}</span>
               </a>

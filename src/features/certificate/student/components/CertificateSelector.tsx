@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
@@ -16,10 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
 import { authenticationStatus } from '@/redux/reducers/authenticationReducer';
 import disabledNoUserList from '@/utils/authentication/disabledNoUserList';
-import constantNameFormatter from '../../../../utils/constantNameFormatter';
+import constantNameFormatter from '@/utils/constantNameFormatter';
 
 /** The uploader of certificates to the database. */
 const CertificateSelector = () => {
@@ -64,7 +65,7 @@ const CertificateSelector = () => {
             disabled={condition}
             name="certificate"
           >
-            <SelectTrigger>
+            <SelectTrigger className="capitalize">
               <SelectValue placeholder="Certificate" />
             </SelectTrigger>
             <SelectContent>
@@ -85,7 +86,7 @@ const CertificateSelector = () => {
           </Select>
         ) : (
           <Select disabled={true} name="certificate">
-            <SelectTrigger>
+            <SelectTrigger className="capitalize">
               <SelectValue placeholder="Certificate" />
             </SelectTrigger>
             <SelectContent>
